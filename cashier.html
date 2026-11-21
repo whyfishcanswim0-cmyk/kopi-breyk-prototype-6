@@ -22,7 +22,7 @@
     <h2>Record a sale</h2>
     <label for="un">Customer username</label>
     <div class="row"><div><input id="un" autocapitalize="none" autocorrect="off"></div><button class="btn ghost" id="find">Find</button></div>
-    <button class="btn" id="scan" style="margin-top:10px">Scan member QR</button><video id="cam" playsinline muted hidden style="width:100%;border-radius:12px;margin-top:10px"></video><canvas id="cv" hidden></canvas>
+    <button class="btn" id="scan" style="margin-top:10px">Scan member QR</button><video id="cam" playsinline muted hidden style="width:100%;border-radius:12px;margin-top:10px"></video><canvas id="cv" hidden></canvas><p class="small" id="scanmsg" style="margin:8px 0 0"></p>
     <div class="card" id="cust" hidden style="margin-top:14px"><img id="cph" class="avatar" style="width:120px;height:120px" hidden><b id="cn" style="font-size:1.2rem"></b><p class="small" id="cd"></p></div>
     <div id="form" hidden>
       <label for="amt">Receipt total (₱, before points)</label><input id="amt" type="number" inputmode="decimal" min="0" step="0.01">
@@ -51,15 +51,30 @@ async function unlock() {
 $('#go').onclick = async () => { pin = $('#cp').value; const e = await unlock(); if (e) { $('#lerr').textContent = e; return; } sessionStorage.setItem('kb_cashier', pin); };
 $('#cp').onkeydown = e => { if (e.key === 'Enter') $('#go').click(); };
 $('#out').onclick = () => { sessionStorage.removeItem('kb_cashier'); location.reload(); };
-let stream = null, timer = null;
-function stopCam() { clearInterval(timer); if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; $('#cam').hidden = true; }
+let stream = null, timer = null, det = null;
+function stopCam() { clearInterval(timer); if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; $('#cam').hidden = true; $('#scan').textContent = 'Scan member QR'; }
+const loadJsQR = () => new Promise(res => { if (typeof jsQR !== 'undefined') return res(true); const t = document.createElement('script'); t.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'; t.onload = () => res(true); t.onerror = () => res(false); document.head.append(t); });
 $('#scan').onclick = async () => {
   if (stream) return stopCam();
-  try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); } catch (e) { toast('Camera not allowed. Type the username instead.'); return; }
+  $('#scanmsg').textContent = 'Starting camera…'; det = null;
+  if ('BarcodeDetector' in window) { try { det = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) { det = null; } }
+  if (!det && !(await loadJsQR())) { $('#scanmsg').textContent = 'The scanner could not load. Check the internet, or type the customer’s code instead.'; return; }
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } }); }
+  catch (e) { $('#scanmsg').textContent = 'The camera is blocked. Allow camera access for this site in your browser settings, or type the code.'; return; }
   const v = $('#cam'), cv = $('#cv'), x = cv.getContext('2d', { willReadFrequently: true }); v.srcObject = stream; v.hidden = false; await v.play();
-  timer = setInterval(() => { if (!v.videoWidth) return; cv.width = v.videoWidth; cv.height = v.videoHeight; x.drawImage(v, 0, 0);
-    const q = jsQR(x.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height);
-    if (q && q.data.startsWith('KB:')) { $('#un').value = q.data.slice(3); stopCam(); $('#find').click(); } }, 250);
+  $('#scan').textContent = 'Stop scanning'; $('#scanmsg').textContent = 'Point the camera at the customer’s QR…';
+  let busy = false;
+  timer = setInterval(async () => {
+    if (busy || !v.videoWidth) return; busy = true;
+    try {
+      let data = null;
+      if (det) { const r = await det.detect(v); if (r.length) data = r[0].rawValue; }
+      else { const w = Math.min(v.videoWidth, 720), h = Math.round(v.videoHeight * w / v.videoWidth); cv.width = w; cv.height = h; x.drawImage(v, 0, 0, w, h);
+        const q = jsQR(x.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'attemptBoth' }); if (q) data = q.data; }
+      if (data) { if (data.startsWith('KB:')) { $('#un').value = data.slice(3); $('#scanmsg').textContent = ''; stopCam(); $('#find').click(); } else $('#scanmsg').textContent = 'That QR is not a Kopi Breyk member code.'; }
+    } catch (e) {}
+    busy = false;
+  }, 300);
 };
 $('#find').onclick = async () => {
   const r = await C('cashier_lookup', { p_user: $('#un').value }); $('#err').textContent = '';
