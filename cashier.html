@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Kopi Breyk Cashier</title>
+<link rel="icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <div class="brand"><span><img src="logo.png" alt="">Cashier</span><button id="out" hidden>Lock</button></div>
+  <section id="login">
+    <h2>Cashier login</h2>
+    <label for="cp">Cashier PIN</label><input id="cp" class="pin" type="password" inputmode="numeric" maxlength="6">
+    <p class="err" id="lerr"></p><button class="btn" id="go">Unlock</button>
+  </section>
+
+  <section id="panel" hidden>
+    <h2>Record a sale</h2>
+    <label for="un">Customer username</label>
+    <div class="row"><div><input id="un" autocapitalize="none" autocorrect="off"></div><button class="btn ghost" id="find">Find</button></div>
+    <button class="btn" id="scan" style="margin-top:10px">Scan member QR</button><video id="cam" playsinline muted hidden style="width:100%;border-radius:12px;margin-top:10px"></video><canvas id="cv" hidden></canvas>
+    <div class="card" id="cust" hidden style="margin-top:14px"><img id="cph" class="avatar" style="width:120px;height:120px" hidden><b id="cn" style="font-size:1.2rem"></b><p class="small" id="cd"></p></div>
+    <div id="form" hidden>
+      <label for="amt">Receipt total (₱, before points)</label><input id="amt" type="number" inputmode="decimal" min="0" step="0.01">
+      <label for="rc">Receipt number</label><input id="rc" autocapitalize="characters">
+      <label for="use">Points to use (0 for none<span id="minhint"></span>)</label><input id="use" type="number" inputmode="numeric" min="0" value="0">
+      <p class="small" id="prev" style="margin-top:10px"></p>
+      <p class="err" id="err"></p>
+      <button class="btn" id="rec">Record sale</button>
+    </div>
+    <div class="res" id="res" hidden><p id="rtxt" style="color:var(--ink);margin:0"></p><button class="btn ghost" id="next">Next customer</button></div>
+  </section>
+</main>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script src="config.js"></script>
+<script>
+let pin = sessionStorage.getItem('kb_cashier') || '', cu = null;
+const C = (fn, a) => rpc(fn, { p_cashier: pin, ...a });
+let cmin = 0; rpc('get_config').then(c => { if (c && c.min_redeem) { cmin = c.min_redeem; $('#minhint').textContent = ', or at least ' + cmin; } });
+const peso = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
+async function unlock() {
+  const r = await C('cashier_lookup', { p_user: '~' });
+  if (r.error && /Wrong cashier PIN/.test(r.error)) return r.error;
+  $('#login').hidden = true; $('#panel').hidden = false; $('#out').hidden = false; return null;
+}
+$('#go').onclick = async () => { pin = $('#cp').value; const e = await unlock(); if (e) { $('#lerr').textContent = e; return; } sessionStorage.setItem('kb_cashier', pin); };
+$('#cp').onkeydown = e => { if (e.key === 'Enter') $('#go').click(); };
+$('#out').onclick = () => { sessionStorage.removeItem('kb_cashier'); location.reload(); };
+let stream = null, timer = null;
+function stopCam() { clearInterval(timer); if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; $('#cam').hidden = true; }
+$('#scan').onclick = async () => {
+  if (stream) return stopCam();
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); } catch (e) { toast('Camera not allowed. Type the username instead.'); return; }
+  const v = $('#cam'), cv = $('#cv'), x = cv.getContext('2d', { willReadFrequently: true }); v.srcObject = stream; v.hidden = false; await v.play();
+  timer = setInterval(() => { if (!v.videoWidth) return; cv.width = v.videoWidth; cv.height = v.videoHeight; x.drawImage(v, 0, 0);
+    const q = jsQR(x.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height);
+    if (q && q.data.startsWith('KB:')) { $('#un').value = q.data.slice(3); stopCam(); $('#find').click(); } }, 250);
+};
+$('#find').onclick = async () => {
+  const r = await C('cashier_lookup', { p_user: $('#un').value }); $('#err').textContent = '';
+  if (r.error) { toast(r.error); $('#cust').hidden = true; $('#form').hidden = true; cu = null; return; }
+  cu = r; $('#cph').hidden = !r.photo; if (r.photo) $('#cph').src = r.photo; $('#cn').textContent = `${r.name || r.username} (${r.username})`;
+  $('#cd').textContent = `${r.points} points (worth ${peso(r.points * r.peso)}) · ${r.spins} free spin${r.spins === 1 ? '' : 's'}` + (r.photo ? '' : ' · NO PHOTO YET: points can’t be used');
+  $('#cust').hidden = false; $('#form').hidden = false; preview();
+};
+function preview() {
+  if (!cu) return; const a = +$('#amt').value || 0, u = +$('#use').value || 0, d = u * cu.peso;
+  $('#prev').textContent = a ? (u > 0 && u < cmin ? 'Minimum ' + cmin + ' points to redeem.' : d > a ? 'Discount is bigger than the bill.' : `Discount ${peso(d)} · Customer pays ${peso(a - d)} · Earns ${Math.floor((a - d) / 100)} point(s)`) : '';
+}
+['#amt', '#use'].forEach(s => $(s).oninput = preview);
+$('#rec').onclick = async () => {
+  $('#err').textContent = ''; $('#rec').disabled = true;
+  const r = await C('cashier_record', { p_user: cu.username, p_amount: +$('#amt').value, p_receipt: $('#rc').value, p_use: Math.floor(+$('#use').value || 0) });
+  $('#rec').disabled = false;
+  if (r.error) { $('#err').textContent = r.error; return; }
+  $('#form').hidden = true; $('#cust').hidden = true; $('#res').hidden = false;
+  $('#rtxt').innerHTML = `<b>Collect ${peso(r.collect)}</b>${r.discount ? ` (${peso(r.discount)} discount applied in the POS)` : ''}<br>${cu.username} earned ${r.earned} point(s). New balance: ${r.points} points.${r.spin_awarded ? '<br><b>Free spin awarded!</b>' : ''}`;
+};
+$('#next').onclick = () => { $('#res').hidden = true; ['#un', '#amt', '#rc'].forEach(s => $(s).value = ''); $('#use').value = 0; $('#prev').textContent = ''; cu = null; };
+if (pin) unlock().then(e => { if (e) sessionStorage.removeItem('kb_cashier'); });
+</script>
+</body>
+</html>
