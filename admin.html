@@ -19,10 +19,10 @@
   </section>
 
   <section id="panel" hidden>
-    <div class="tabs t4" id="tabs"><button class="on" data-t="report">Today</button><button data-t="cust">Customers</button><button data-t="sales">Sales</button><button data-t="fb">Feedback</button><button data-t="bd">Birthdays</button><button data-t="menu">Menu</button><button data-t="res">Reservations</button><button data-t="prz">Prizes</button><button data-t="set">Settings</button></div>
+    <div class="tabs t4" id="tabs"><button class="on" data-t="report">Today</button><button data-t="cust">Customers</button><button data-t="sales">Sales</button><button data-t="fb">Feedback</button><button data-t="bd">Birthdays</button><button data-t="menu">Menu</button><button data-t="res">Reservations</button><button data-t="site">Website</button><button data-t="posts">Posts</button><button data-t="prz">Prizes</button><button data-t="set">Settings</button></div>
 
     <div class="tab" id="t-report">
-      <p id="bdbanner" style="color:var(--gold);font-weight:500;margin:0 0 6px"></p><div class="stat" id="stats"></div>
+      <p id="costline" class="small" style="margin:0 0 6px"></p><p id="bdbanner" style="color:var(--gold);font-weight:500;margin:0 0 6px"></p><div class="stat" id="stats"></div>
       <h2 style="margin-top:28px">Prizes won today</h2><div id="won" class="small"></div>
     </div>
 
@@ -46,9 +46,37 @@
 
     <div class="tab" id="t-res" hidden><div class="scroll"><table><thead><tr><th>When</th><th>Customer</th><th>Booking</th><th>Notes</th><th>Status</th><th></th></tr></thead><tbody id="resrows"></tbody></table></div></div>
 
+    <div class="tab" id="t-site" hidden>
+      <p class="small">This is your public home page (your main link). Empty sections stay hidden, so you can fill it in over time.</p>
+      <div class="cbox"><b>Main photo</b> <span class="small">(a wide photo of your shop)</span><div style="margin-top:8px"><label class="mini">Choose main photo<input type="file" accept="image/*" id="hero-file" hidden></label> <button class="mini bad" data-a="hero-del" id="hero-del" hidden>Remove</button> <span class="small" id="hero-state"></span></div></div>
+      <div class="cbox"><b>Gallery</b> <span class="small">(up to 6 photos)</span><div class="row" style="margin-top:8px"><div><input id="gal-cap" placeholder="Caption (optional)"></div><label class="mini">Add photo<input type="file" accept="image/*" id="gal-file" hidden></label></div><div id="imgs" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px"></div></div>
+      <h2 style="margin-top:24px">Information</h2>
+      <label for="s-tagline">Tagline</label><input id="s-tagline" placeholder="Coffee · Lounge · Events">
+      <label for="s-about">About us</label><textarea id="s-about" rows="4"></textarea>
+      <label for="s-hours">Opening hours (one line per day or range)</label><textarea id="s-hours" rows="3" placeholder="Mon-Fri 8am-10pm"></textarea>
+      <label for="s-address">Address</label><input id="s-address">
+      <label for="s-map">Google Maps link</label><input id="s-map" placeholder="https://maps.app.goo.gl/...">
+      <div class="row"><div><label for="s-phone">Phone</label><input id="s-phone"></div><div><label for="s-email">Email</label><input id="s-email"></div></div>
+      <div class="row"><div><label for="s-fb">Facebook link</label><input id="s-fb"></div><div><label for="s-ig">Instagram link</label><input id="s-ig"></div></div>
+      <h2 style="margin-top:24px">Promo banner</h2><p class="small">Shown at the top of your home page and the rewards app.</p>
+      <label for="b-text">Banner text</label><input id="b-text" placeholder="Double points this Friday!">
+      <div class="row"><div><label for="b-until">Show until (optional)</label><input id="b-until" type="date"></div><div><label style="display:flex;gap:8px;align-items:center"><input id="b-on" type="checkbox" style="width:auto"> Show the banner</label></div></div>
+      <button class="btn" data-a="site-save" style="max-width:260px">Save website information</button>
+    </div>
+
+    <div class="tab" id="t-posts" hidden>
+      <div class="cbox"><b id="post-h">New post</b>
+        <div class="row" style="margin-top:8px"><div><label for="p-kind">Type</label><select id="p-kind"><option value="announcement">Announcement</option><option value="event">Event</option></select></div><div><label for="p-title">Title</label><input id="p-title"></div></div>
+        <label for="p-body">Details</label><textarea id="p-body" rows="3"></textarea>
+        <div class="row ev-only"><div><label for="p-date">Event date</label><input id="p-date" type="date"></div><div><label for="p-time">Time</label><input id="p-time" placeholder="7:00 PM"></div><div><label for="p-spots">Spots (blank = unlimited)</label><input id="p-spots" type="number" min="1"></div></div>
+        <div style="margin-top:10px"><label class="mini">Photo<input type="file" accept="image/*" id="p-file" hidden></label> <img id="p-prev" class="th" hidden style="display:inline-block;vertical-align:middle"> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input id="p-pub" type="checkbox" checked style="width:auto"> Published</label></div>
+        <div style="margin-top:12px"><button class="mini" data-a="post-save">Save post</button> <button class="mini" data-a="post-new">Clear form</button></div></div>
+      <div class="scroll"><table><thead><tr><th>Post</th><th>When</th><th>Going</th><th></th></tr></thead><tbody id="postrows"></tbody></table></div>
+    </div>
+
     <div class="tab" id="t-prz" hidden>
       <p class="small">Weight = how likely (bigger wins more). Daily limit = max wins per day (leave blank for unlimited). Keep Try Again unticked under “Real prize”.</p>
-      <div class="scroll"><table><thead><tr><th>Name</th><th>Weight</th><th>Color</th><th>Real prize</th><th>On wheel</th><th>Daily limit</th><th></th></tr></thead><tbody id="przrows"></tbody></table></div>
+      <div class="scroll"><table><thead><tr><th>Name</th><th>Weight</th><th>Color</th><th>Real prize</th><th>On wheel</th><th>Daily limit</th><th>Value ₱</th><th></th></tr></thead><tbody id="przrows"></tbody></table></div>
       <button class="btn ghost" id="addp">Add a prize</button>
     </div>
 
@@ -61,20 +89,28 @@
       <div class="row"><div><input id="cpin" class="pin" inputmode="numeric" maxlength="6" placeholder="New 4-6 digits"></div><button class="btn" id="csave">Save PIN</button></div>
       <h2 style="margin-top:30px">Points</h2>
       <div class="row"><div><label for="ppp">Peso value of 1 point</label><input id="ppp" type="number" min="0" step="0.5"></div><div><label for="wp">Welcome points</label><input id="wp" type="number" min="0"></div><div><label for="mr">Minimum points to redeem</label><input id="mr" type="number" min="0"></div><button class="btn" id="psave">Save</button></div>
+      <h2 style="margin-top:30px">Prize budget and referrals</h2>
+      <p class="small">Daily prize budget: the most (in pesos) the wheel may give away per day. 0 means no cap. Set each prize’s peso value in the Prizes tab.</p>
+      <div class="row"><div><label for="bud">Daily prize budget ₱</label><input id="bud" type="number" min="0"></div><div><label for="rpts">Referrer earns (points)</label><input id="rpts" type="number" min="0"></div><div><label for="rfb">New friend bonus (points)</label><input id="rfb" type="number" min="0"></div></div>
+      <div class="row" style="margin-top:10px"><div><label for="rmin">Minimum first purchase ₱</label><input id="rmin" type="number" min="0"></div><div><label for="rcap">Max referrals per person per month (0 = unlimited)</label><input id="rcap" type="number" min="0"></div><button class="btn" id="rsave">Save</button></div>
     </div>
   </section>
 </main>
 <div id="toast"></div>
 <script src="config.js"></script>
 <script>
-let pw = sessionStorage.getItem('kb_admin') || '', players = [], prz = [], sales = [], feedback = [], birthdays = [], menu = [], reservations = [];
+let pw = sessionStorage.getItem('kb_admin') || '', players = [], prz = [], sales = [], feedback = [], birthdays = [], menu = [], reservations = [], site = { texts: {}, images: [] }, posts = [], editPost = null, postPhoto = null;
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const A = (fn, a) => rpc(fn, { p_pw: pw, ...a });
 
 async function loadAll() {
-  const [l, r, p, sl, fb, bl, mn, rs] = await Promise.all([A('admin_list'), A('admin_report'), A('admin_prizes'), A('admin_sales'), A('admin_feedback'), A('admin_birthdays'), rpc('get_menu'), A('admin_reservations')]);
+  const [l, r, p, sl, fb, bl, mn, rs, co, si, ps] = await Promise.all([A('admin_list'), A('admin_report'), A('admin_prizes'), A('admin_sales'), A('admin_feedback'), A('admin_birthdays'), rpc('get_menu'), A('admin_reservations'), A('admin_costs'), A('admin_site'), A('admin_posts')]);
   if (l.error) return l;
-  players = l.players; $('#code').value = l.code; prz = p.prizes; sales = sl.sales || []; feedback = fb.feedback || []; birthdays = bl.birthdays || []; menu = Array.isArray(mn) ? mn : []; reservations = rs.reservations || []; $('#mr').value = fb.min ?? 50; $('#fbsum').innerHTML = `<div><b>${fb.avg ?? '-'}</b>Average rating</div><div><b>${fb.count ?? 0}</b>Feedback received</div>`; $('#ppp').value = l.ppp; $('#wp').value = l.wp;
+  players = l.players; $('#code').value = l.code; prz = p.prizes; sales = sl.sales || []; feedback = fb.feedback || []; birthdays = bl.birthdays || []; menu = Array.isArray(mn) ? mn : []; reservations = rs.reservations || [];
+  site = si; posts = ps.posts || []; renderSite(); renderPosts();
+  const pe = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
+  $('#costline').textContent = `Prize cost today ${pe(co.prize_today)}${+co.budget ? ' of ' + pe(co.budget) + ' budget' : ' (no daily cap set)'} · this month ${pe(co.prize_month)} · points discounts today ${pe(co.disc_today)}, this month ${pe(co.disc_month)} · referrals confirmed this month ${co.refs_month}`;
+  $('#bud').value = co.budget; $('#rpts').value = co.ref_pts; $('#rfb').value = co.ref_bonus; $('#rmin').value = co.ref_min; $('#rcap').value = co.ref_cap; $('#mr').value = fb.min ?? 50; $('#fbsum').innerHTML = `<div><b>${fb.avg ?? '-'}</b>Average rating</div><div><b>${fb.count ?? 0}</b>Feedback received</div>`; $('#ppp').value = l.ppp; $('#wp').value = l.wp;
   $('#stats').innerHTML = [['Customers', r.customers], ['Visited today', r.checkins], ['Spins', r.spins], ['Prizes won', r.wins], ['Prizes redeemed', r.redeemed], ['Sales today (₱)', Number(r.sales).toLocaleString()], ['Points given', r.pts_in], ['Points used', r.pts_out]].map(x => `<div><b>${x[1]}</b>${x[0]}</div>`).join('');
   $('#won').innerHTML = r.prizes.map(x => `<span class="chip">${esc(x.prize)}: ${x.n}</span>`).join('') || 'No spins yet today.';
   renderCust(); renderPrizes(); renderSales(); renderFeedback(); renderBirthdays(); renderMenu(); renderRes(); return l;
@@ -93,19 +129,21 @@ function prow(p) {
   return `<tr data-id="${p.id}"><td><input type="text" class="f-label" value="${esc(p.label)}"></td><td><input type="number" min="1" class="f-weight" value="${p.weight}" style="width:70px"></td>
   <td><input type="color" class="f-color" value="${p.color}"></td><td><input type="checkbox" class="f-win" ${p.is_win ? 'checked' : ''}></td><td><input type="checkbox" class="f-act" ${p.active ? 'checked' : ''}></td>
   <td><input type="number" min="1" class="f-lim" value="${p.daily_limit ?? ''}" style="width:70px"></td>
+  <td><input type="number" min="0" step="0.5" class="f-val" value="${p.value ?? 0}" style="width:80px"></td>
   <td><button class="mini" data-a="psave">Save</button>${p.id ? '<button class="mini bad" data-a="pdel">Delete</button>' : ''}</td></tr>`;
 }
 const renderSales = () => $('#salesrows').innerHTML = sales.map(x => `<tr><td>${esc(x.t)}</td><td>${esc(x.username)}</td><td>${esc(x.receipt_no)}</td><td>₱${x.amount}</td><td>+${x.earned} / −${x.used}</td><td>${x.voided ? 'voided' : `<button class="mini bad" data-a="void" data-id="${x.id}">Void</button>`}</td></tr>`).join('') || '<tr><td colspan="6">No sales yet.</td></tr>';
 const renderFeedback = () => $('#fbrows').innerHTML = feedback.map(x => `<tr><td>${esc(x.t)}</td><td>${esc(x.username)}</td><td style="color:var(--gold);white-space:nowrap">${'★'.repeat(x.rating)}${'☆'.repeat(5 - x.rating)}</td><td>${esc(x.message)}</td></tr>`).join('') || '<tr><td colspan="4">No feedback yet.</td></tr>';
-const irow = i => { i = i || { id: '', name: '', description: '', price: '', available: true, sort: 0, has_photo: false };
+const irow = i => { i = i || { id: '', name: '', description: '', price: '', available: true, sort: 0, has_photo: false, tags: [], special: false };
   return `<tr data-id="${i.id}"><td><img class="th ph" src="logo.png" ${i.has_photo ? `data-pid="${i.id}"` : ''}><label class="mini">Photo<input type="file" accept="image/*" class="i-file" hidden></label></td>
   <td><input type="text" class="i-name" value="${esc(i.name)}" placeholder="Name"></td><td><input type="text" class="i-desc" value="${esc(i.description)}" placeholder="Description (optional)"></td>
   <td><input type="number" class="i-price" min="0" step="0.5" value="${i.price}" style="width:90px"></td><td><input type="checkbox" class="i-av" ${i.available ? 'checked' : ''}></td>
-  <td><input type="number" class="i-sort" value="${i.sort}" style="width:64px"></td><td><button class="mini" data-a="isave">Save</button><button class="mini bad" data-a="idel">Delete</button></td></tr>`; };
+  <td><input type="number" class="i-sort" value="${i.sort}" style="width:64px"></td><td>${['Bestseller', 'New', 'Vegan', 'Spicy'].map(t => `<label class="tg"><input type="checkbox" class="i-tag" value="${t}" ${(i.tags || []).includes(t) ? 'checked' : ''}>${t}</label>`).join('')}<label class="tg" style="color:var(--gold)"><input type="checkbox" class="i-sp" ${i.special ? 'checked' : ''}>Today’s special</label></td>
+  <td><button class="mini" data-a="isave">Save</button><button class="mini bad" data-a="idel">Delete</button></td></tr>`; };
 const renderMenu = () => {
   $('#menubox').innerHTML = menu.map(c => `<div class="cbox" data-cid="${c.id}"><div class="row"><div><label>Category name</label><input type="text" class="c-name" value="${esc(c.name)}"></div><div style="flex:0 0 80px"><label>Order</label><input type="number" class="c-sort" value="${c.sort}"></div></div>
     <div style="margin-top:10px"><button class="mini" data-a="csave">Save category</button><button class="mini" data-a="iadd">Add item</button><button class="mini bad" data-a="cdel">Delete category</button></div>
-    <div class="scroll"><table><thead><tr><th>Photo</th><th>Name</th><th>Description</th><th>Price ₱</th><th>Available</th><th>Order</th><th></th></tr></thead><tbody>${c.items.map(irow).join('')}</tbody></table></div></div>`).join('') || '<p class="small" style="margin-top:14px">No categories yet. Add your first one above.</p>';
+    <div class="scroll"><table><thead><tr><th>Photo</th><th>Name</th><th>Description</th><th>Price ₱</th><th>Available</th><th>Order</th><th>Tags</th><th></th></tr></thead><tbody>${c.items.map(irow).join('')}</tbody></table></div></div>`).join('') || '<p class="small" style="margin-top:14px">No categories yet. Add your first one above.</p>';
   document.querySelectorAll('#menubox img[data-pid]').forEach(async im => { const r = await rpc('get_menu_photo', { p_id: +im.dataset.pid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } });
 };
 const shrinkM = f => new Promise(res => { const im = new Image(); im.onload = () => { const s = Math.min(im.width, im.height), c = document.createElement('canvas'); c.width = c.height = 480;
@@ -117,6 +155,44 @@ const renderRes = () => {
   $('#resrows').innerHTML = reservations.map(x => `<tr><td>${esc(x.dlabel)}<br>${esc(x.res_time)}</td><td><b>${esc(x.full_name || x.username)}</b><br>${esc(x.mobile)}</td><td>${esc(x.kind)}<br>${x.guests} guest${x.guests === 1 ? '' : 's'}</td><td>${esc(x.notes)}</td>
     <td>${esc(x.status)}${x.admin_note ? `<br><span class="small">${esc(x.admin_note)}</span>` : ''}</td><td>${x.status === 'pending' ? `<button class="mini" data-a="rok" data-id="${x.id}">Confirm</button>` : ''}${['pending', 'confirmed'].includes(x.status) ? `<button class="mini bad" data-a="rno" data-id="${x.id}">Decline</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="6">No reservations yet.</td></tr>';
 };
+const shrinkTo = (f, w, h, q) => new Promise(res => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; const k = Math.max(w / im.width, h / im.height), sw = w / k, sh = h / k;
+  c.getContext('2d').drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, 0, 0, w, h); URL.revokeObjectURL(im.src); res(c.toDataURL('image/jpeg', q)); }; im.src = URL.createObjectURL(f); });
+const T = () => site.texts || {};
+const renderSite = () => {
+  const t = T(), set = (id, k) => { if (document.activeElement !== $(id)) $(id).value = t[k] || ''; };
+  set('#s-tagline', 'tagline'); set('#s-about', 'about'); set('#s-hours', 'hours'); set('#s-address', 'address'); set('#s-map', 'map_url'); set('#s-phone', 'phone'); set('#s-email', 'email'); set('#s-fb', 'facebook'); set('#s-ig', 'instagram'); set('#b-text', 'banner_text'); set('#b-until', 'banner_until');
+  $('#b-on').checked = t.banner_on === '1';
+  const hero = site.images.find(i => i.slot === 'hero'); $('#hero-state').textContent = hero ? 'A main photo is set.' : 'No main photo yet.'; $('#hero-del').hidden = !hero; $('#hero-del').dataset.id = hero ? hero.id : '';
+  $('#imgs').innerHTML = site.images.filter(i => i.slot === 'gallery').map(i => `<div><img class="th ph" data-sid="${i.id}" src="logo.png"><span class="small">${esc(i.caption)}</span><br><button class="mini bad" data-a="img-del" data-id="${i.id}">Delete</button></div>`).join('');
+  document.querySelectorAll('#imgs img[data-sid]').forEach(async im => { const r = await rpc('get_site_image', { p_id: +im.dataset.sid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } });
+};
+const renderPosts = () => {
+  $('#postrows').innerHTML = posts.map(p => `<tr><td><b>${esc(p.title)}</b><br><span class="small">${p.kind}${p.published ? '' : ' · hidden'}</span></td><td>${p.kind === 'event' ? esc(p.event_date) + '<br>' + esc(p.event_time) : '-'}</td><td>${p.kind === 'event' ? p.going + (p.spots ? '/' + p.spots : '') : '-'}</td>
+    <td><button class="mini" data-a="post-edit" data-id="${p.id}">Edit</button>${p.kind === 'event' ? `<button class="mini" data-a="post-att" data-id="${p.id}">Who’s going</button>` : ''}<button class="mini bad" data-a="post-del" data-id="${p.id}">Delete</button></td></tr>`).join('') || '<tr><td colspan="4">No posts yet.</td></tr>';
+};
+const fillPost = p => { editPost = p ? p.id : null; postPhoto = null; $('#post-h').textContent = p ? 'Edit post' : 'New post';
+  $('#p-kind').value = p ? p.kind : 'announcement'; $('#p-title').value = p ? p.title : ''; $('#p-body').value = p ? p.body || '' : ''; $('#p-date').value = p ? p.event_date || '' : ''; $('#p-time').value = p ? p.event_time || '' : ''; $('#p-spots').value = p ? p.spots || '' : ''; $('#p-pub').checked = p ? p.published : true; $('#p-prev').hidden = true; $('#p-file').value = ''; kindUI(); };
+const kindUI = () => document.querySelectorAll('.ev-only').forEach(e => e.hidden = $('#p-kind').value !== 'event');
+$('#p-kind').onchange = kindUI; kindUI();
+document.addEventListener('change', async e => {
+  const id = e.target.id, f = e.target.files && e.target.files[0]; if (!f) return;
+  if (id === 'hero-file') { const r = await A('admin_add_image', { p_slot: 'hero', p_photo: await shrinkTo(f, 1200, 675, .72), p_caption: '' }); toast(r.error || 'Main photo saved'); await loadAll(); }
+  if (id === 'gal-file') { const r = await A('admin_add_image', { p_slot: 'gallery', p_photo: await shrinkTo(f, 800, 800, .72), p_caption: $('#gal-cap').value }); toast(r.error || 'Photo added'); $('#gal-cap').value = ''; await loadAll(); }
+  if (id === 'p-file') { postPhoto = await shrinkTo(f, 900, 600, .72); $('#p-prev').src = postPhoto; $('#p-prev').hidden = false; }
+});
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button[data-a]'); if (!b) return; const a = b.dataset.a;
+  if (a === 'site-save') { const g = id => $(id).value, d = { tagline: g('#s-tagline'), about: g('#s-about'), hours: g('#s-hours'), address: g('#s-address'), map_url: g('#s-map'), phone: g('#s-phone'), email: g('#s-email'), facebook: g('#s-fb'), instagram: g('#s-ig'), banner_text: g('#b-text'), banner_until: g('#b-until'), banner_on: $('#b-on').checked ? '1' : '0' };
+    const r = await A('admin_save_site', { p_data: d }); toast(r.error || 'Website saved'); await loadAll(); }
+  if (a === 'hero-del' || a === 'img-del') { if (!confirm('Delete this photo?')) return; await A('admin_delete_image', { p_id: +b.dataset.id }); await loadAll(); }
+  if (a === 'post-new') fillPost(null);
+  if (a === 'post-edit') fillPost(posts.find(p => p.id == b.dataset.id));
+  if (a === 'post-save') { const sp = $('#p-spots').value;
+    const r = await A('admin_save_post', { p_id: editPost, p_kind: $('#p-kind').value, p_title: $('#p-title').value, p_body: $('#p-body').value, p_date: $('#p-date').value || null, p_time: $('#p-time').value, p_spots: sp ? +sp : null, p_pub: $('#p-pub').checked, p_photo: postPhoto });
+    if (r.error) return toast(r.error); toast('Post saved'); fillPost(null); await loadAll(); }
+  if (a === 'post-del') { if (!confirm('Delete this post?')) return; await A('admin_delete_post', { p_id: +b.dataset.id }); await loadAll(); }
+  if (a === 'post-att') { const r = await A('admin_attendees', { p_id: +b.dataset.id }); alert((r.people || []).map(x => x.name + (x.mobile ? ' (' + x.mobile + ')' : '')).join('\n') || 'Nobody yet.'); }
+});
 const when = d => d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : 'In ' + d + ' days';
 const renderBirthdays = () => {
   $('#bdrows').innerHTML = birthdays.map(b => { const f = (b.full_name || b.username).split(' ')[0], msg = encodeURIComponent(`Happy birthday, ${f}! From all of us at Kopi Breyk. Your birthday bonus spin is waiting in the app.`);
@@ -136,7 +212,7 @@ document.addEventListener('click', async e => {
   if (a === 'cdel') { if (!confirm('Delete this category and ALL its items?')) return; await A('admin_delete_category', { p_id: +b.closest('[data-cid]').dataset.cid }); await loadAll(); }
   if (a === 'iadd') { b.closest('[data-cid]').querySelector('tbody').insertAdjacentHTML('beforeend', irow(null)); }
   if (a === 'isave') { const r = b.closest('tr'), cid = +b.closest('[data-cid]').dataset.cid;
-    const res = await A('admin_save_item', { p_id: r.dataset.id ? +r.dataset.id : null, p_cat: cid, p_name: r.querySelector('.i-name').value, p_desc: r.querySelector('.i-desc').value, p_price: r.querySelector('.i-price').value === '' ? null : +r.querySelector('.i-price').value, p_avail: r.querySelector('.i-av').checked, p_sort: +r.querySelector('.i-sort').value || 0, p_photo: r.dataset.photo || null });
+    const res = await A('admin_save_item', { p_id: r.dataset.id ? +r.dataset.id : null, p_cat: cid, p_name: r.querySelector('.i-name').value, p_desc: r.querySelector('.i-desc').value, p_price: r.querySelector('.i-price').value === '' ? null : +r.querySelector('.i-price').value, p_avail: r.querySelector('.i-av').checked, p_sort: +r.querySelector('.i-sort').value || 0, p_tags: [...r.querySelectorAll('.i-tag:checked')].map(x => x.value), p_special: r.querySelector('.i-sp').checked, p_photo: r.dataset.photo || null });
     if (res.error) return toast(res.error); toast('Item saved'); await loadAll(); }
   if (a === 'idel') { const r = b.closest('tr'); if (!r.dataset.id) return r.remove(); if (!confirm('Delete this item?')) return; await A('admin_delete_item', { p_id: +r.dataset.id }); await loadAll(); }
   if (a === 'rok' || a === 'rno') { const note = prompt(a === 'rok' ? 'Optional note for the customer (for example, your table number):' : 'Reason for declining (shown to the customer):'); if (note === null) return;
@@ -147,7 +223,7 @@ document.addEventListener('click', async e => {
   if (a === 'ban') { await A('admin_ban', { p_user: u, p_flag: b.dataset.b !== 'true' }); await loadAll(); }
   if (a === 'del') { if (!confirm('Delete ' + u + ' and all their visits? This can’t be undone.')) return; await A('admin_delete_player', { p_user: u }); await loadAll(); toast('Deleted ' + u); }
   if (a === 'psave') { const r = b.closest('tr'), id = r.dataset.id, lim = r.querySelector('.f-lim').value;
-    const res = await A('admin_save_prize', { p_id: id ? +id : null, p_label: r.querySelector('.f-label').value, p_weight: +r.querySelector('.f-weight').value, p_color: r.querySelector('.f-color').value, p_is_win: r.querySelector('.f-win').checked, p_active: r.querySelector('.f-act').checked, p_limit: lim ? +lim : null });
+    const res = await A('admin_save_prize', { p_id: id ? +id : null, p_label: r.querySelector('.f-label').value, p_weight: +r.querySelector('.f-weight').value, p_color: r.querySelector('.f-color').value, p_is_win: r.querySelector('.f-win').checked, p_active: r.querySelector('.f-act').checked, p_limit: lim ? +lim : null, p_value: +r.querySelector('.f-val').value || 0 });
     if (res.error) return toast(res.error); toast('Prize saved'); await loadAll(); }
   if (a === 'pdel') { if (!confirm('Delete this prize?')) return; await A('admin_delete_prize', { p_id: +b.closest('tr').dataset.id }); await loadAll(); }
 });
@@ -165,6 +241,11 @@ $('#csv').onclick = () => {
 $('#rand').onclick = () => $('#code').value = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
 $('#save').onclick = async () => { const r = await A('admin_set_code', { p_code: $('#code').value }); toast(r.error || 'Daily code saved: ' + r.code); };
 $('#psave').onclick = async () => { const a = await A('admin_set_value', { p_key: 'peso_per_point', p_val: +$('#ppp').value }), b = await A('admin_set_value', { p_key: 'welcome_points', p_val: +$('#wp').value }), m = await A('admin_set_value', { p_key: 'min_redeem', p_val: +$('#mr').value }); toast(a.error || b.error || m.error || 'Points settings saved'); };
+$('#rsave').onclick = async () => {
+  const keys = [['daily_prize_budget', '#bud'], ['referral_points', '#rpts'], ['referral_friend_bonus', '#rfb'], ['referral_min_purchase', '#rmin'], ['referral_monthly_cap', '#rcap']];
+  const out = []; for (const [k, q] of keys) out.push(await A('admin_set_value', { p_key: k, p_val: +$(q).value }));
+  toast((out.find(x => x.error) || {}).error || 'Saved'); await loadAll();
+};
 $('#csave').onclick = async () => { const r = await A('admin_set_cashier', { p_pin: $('#cpin').value }); toast(r.error || 'Cashier PIN saved'); if (!r.error) $('#cpin').value = ''; };
 
 async function enter() { const r = await loadAll(); if (r.error) return r; $('#login').hidden = true; $('#panel').hidden = false; $('#out').hidden = false; return r; }
