@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4a0e1a">
+<title>Kopi Breyk Menu</title>
+<link rel="icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <div class="brand"><span><img src="logo.png" alt="">Our menu</span><a href="/" style="color:var(--mut);font-size:.9rem;text-decoration:none">‹ Rewards</a></div>
+  <div class="chips" id="chips"></div>
+  <div id="menu"><p class="small">Loading…</p></div>
+</main>
+<div id="toast"></div>
+<script src="config.js"></script>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const peso = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
+(async () => {
+  const m = await rpc('get_menu');
+  if (m.error) { $('#menu').innerHTML = '<p class="err">' + esc(m.error) + '</p>'; return; }
+  const cats = m.filter(c => c.items.length);
+  if (!cats.length) { $('#menu').innerHTML = '<p>Our menu is coming soon.</p>'; return; }
+  $('#chips').innerHTML = cats.map(c => `<a href="#c${c.id}">${esc(c.name)}</a>`).join('');
+  $('#menu').innerHTML = cats.map(c => `<h2 id="c${c.id}" class="mh">${esc(c.name)}</h2>` + c.items.map(i => `<div class="mi${i.available ? '' : ' so'}">
+    <img class="mp ph" data-pid="${i.has_photo ? i.id : ''}" src="logo.png" alt=""><div class="mt"><b>${esc(i.name)}</b>${i.description ? `<p>${esc(i.description)}</p>` : ''}${i.available ? '' : '<p class="soldout">Sold out</p>'}</div>
+    <div class="mpr">${peso(i.price)}</div></div>`).join('')).join('');
+  document.querySelectorAll('img[data-pid]').forEach(async im => {
+    if (!im.dataset.pid) return; const r = await rpc('get_menu_photo', { p_id: +im.dataset.pid });
+    if (r.photo) { im.src = r.photo; im.classList.remove('ph'); }
+  });
+})();
+</script>
+</body>
+</html>
