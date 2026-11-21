@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Events &amp; announcements | Kopi Breyk</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4a0e1a">
+<link rel="icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <div class="brand"><span><img src="logo.png" alt="">Kopi Breyk</span><nav class="topnav"><a href="/menu">Menu</a><a href="/events">Events</a><a href="/app">Rewards</a></nav></div>
+  <h2>Events &amp; announcements</h2>
+  <p>To RSVP for an event, log in to the <a href="/app" style="color:var(--gold)">rewards app</a> and open the Explore tab.</p>
+  <div id="list"><p class="small">Loading…</p></div>
+</main>
+<div id="toast"></div>
+<script src="config.js"></script>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+(async () => {
+  const ps = await rpc('get_posts');
+  if (!Array.isArray(ps) || !ps.length) { document.querySelector('#list').innerHTML = '<p>Nothing posted yet. Check back soon!</p>'; return; }
+  document.querySelector('#list').innerHTML = ps.map(p => `<div class="post">${p.has_photo ? `<img data-pid="${p.id}" src="logo.png" class="ph" alt="">` : ''}<b>${esc(p.title)}</b>${p.kind === 'event' ? `<p class="small" style="margin:2px 0">${esc(p.dlabel)} · ${esc(p.event_time)} · ${p.going}${p.spots ? '/' + p.spots : ''} going</p>` : ''}${p.body ? `<p style="margin:6px 0 0;white-space:pre-line">${esc(p.body)}</p>` : ''}</div>`).join('');
+  document.querySelectorAll('img[data-pid]').forEach(async im => { const r = await rpc('get_post_photo', { p_id: +im.dataset.pid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } });
+})();
+</script>
+</body>
+</html>
