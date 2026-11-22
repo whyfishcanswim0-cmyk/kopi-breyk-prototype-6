@@ -63,6 +63,7 @@
       <p class="bonus" id="bonus-note" hidden></p>
       <div class="row2" id="home-spin" hidden style="margin-top:16px"><h2>You have <span id="spins2">0</span> free spin(s)</h2><button class="btn" id="to-wheel2">Spin the wheel</button></div>
       <div class="row2"><h2 id="st-title2" style="font-size:1.4rem"></h2><p class="small" id="st-txt2" style="margin:0 0 8px"></p><button class="mini" data-tab="rewards">See my calendar ›</button></div>
+      <div class="row2"><h2 style="font-size:1.3rem">Kopi Breyk community</h2><p class="small" style="margin:0 0 8px">Share moments and chat with other regulars.</p><button class="mini" id="open-comm2">Open the community ›</button></div>
     </div>
     <div class="pane" id="p-rewards" hidden>
       <h2>Rewards</h2>
@@ -76,6 +77,7 @@
     </div>
     <div class="pane" id="p-explore" hidden>
       <h2>Explore</h2>
+      <div class="row2"><h2 style="font-size:1.5rem">Community</h2><p class="small">Meet other Kopi Breyk regulars, share photos, and join the conversation.</p><button class="btn" id="open-comm">Open the community</button></div>
       <h2 style="font-size:1.5rem">What’s on</h2><div id="ev-list"></div>
       <div class="row2"><h2 style="font-size:1.5rem">Our menu</h2><p class="small">Browse drinks and food with photos and prices.</p><a class="btn" href="/menu">View the menu</a></div>
       <div class="card"><h2>Reserve with us</h2><p class="small">Request a lounge table, an event, or a private party. Our team will confirm.</p>
@@ -116,6 +118,34 @@
     <label class="btn ghost" style="text-align:center;cursor:pointer">Take or choose a photo<input id="ph-file" type="file" accept="image/*" capture="user" hidden></label>
     <p class="err" id="ph-err"></p>
     <button class="btn" id="ph-save" hidden>Save my photo</button>
+  </section>
+
+  <section class="screen" id="s-comm" hidden>
+    <button class="back" data-home>‹ Back</button>
+    <h2>Community</h2>
+    <div id="c-closed" hidden><p>The community is closed for now. Please check back soon.</p></div>
+    <div id="c-join" hidden><div class="card" style="text-align:left"><h2>Join the community</h2>
+      <p class="small" style="text-align:left">Share moments, like and comment with other Kopi Breyk regulars. Be kind, and don’t post anyone else’s photo without their permission. Read the <a href="/guidelines" target="_blank">community guidelines</a>.</p>
+      <p class="err" id="c-agemsg" hidden>The community is for members aged 13 and up.</p>
+      <label for="c-nick">Choose a nickname</label><input id="c-nick" maxlength="20" placeholder="e.g. Maria S.">
+      <label>Choose a picture</label><div class="avs" id="c-avs"></div>
+      <label class="mini" style="display:inline-block;margin-top:8px">Or upload your own<input type="file" accept="image/*" id="c-avfile" hidden></label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:.88rem;color:var(--mut);margin-top:14px"><input type="checkbox" id="c-agree" style="margin-top:3px">I agree to share my nickname, picture, posts and comments with other members. See the <a href="/privacy" target="_blank" style="color:var(--gold)">privacy notice</a>.</label>
+      <p class="err" id="c-err"></p><button class="btn" id="c-joinbtn">Join the community</button></div></div>
+    <div id="c-main" hidden>
+      <div class="tabs" id="c-tabs"><button class="on" data-ct="feed">Feed</button><button data-ct="photos">Photos</button><button data-ct="me">Me</button></div>
+      <div id="ct-feed">
+        <div class="card" style="text-align:left"><textarea id="c-body" rows="3" maxlength="500" placeholder="Share something with the community…"></textarea>
+          <div style="margin-top:10px"><label class="mini" id="c-photobtn">Add photo<input type="file" accept="image/*" id="c-file" hidden></label> <img id="c-prev" class="th" hidden style="display:inline-block;vertical-align:middle"> <span class="small" id="c-note"></span></div>
+          <button class="btn" id="c-post">Post</button></div>
+        <div id="c-pending"></div><div id="c-feed"></div><button class="btn ghost" id="c-more" hidden>Load more</button>
+      </div>
+      <div id="ct-photos" hidden><div class="gal" id="c-gal"></div></div>
+      <div id="ct-me" hidden><div class="card" style="text-align:center"><div id="me-av"></div><h2 id="me-nick" style="margin-top:8px"></h2><p class="small" id="me-since"></p></div>
+        <div class="row2"><h2 style="font-size:1.3rem">Change my picture</h2><div class="avs" id="me-avs"></div><label class="mini" style="display:inline-block;margin-top:8px">Upload a picture<input type="file" accept="image/*" id="me-avfile" hidden></label></div>
+        <p class="small" style="text-align:center"><a href="/guidelines" target="_blank" style="color:var(--mut)">Community guidelines</a> · <a href="#" id="c-leave" style="color:var(--bad)">Leave the community</a></p></div>
+    </div>
+    <div id="c-modal" hidden></div>
   </section>
 
   <section class="screen" id="s-wheel" hidden>
@@ -254,6 +284,87 @@ function setTab(t, user) {
 all('[data-tab]', b => b.onclick = () => setTab(b.dataset.tab, true));
 $('#to-wheel2').onclick = () => $('#to-wheel').click();
 $('#logout2').onclick = logout;
+
+// ---- community ----
+let cme = null, cTab = 'feed', cPhoto = null, avPick = 'p1', avUpload = null, feedLast = null;
+const AVC = ['#d4af5f', '#a33a4d', '#3f7d5a', '#7a5aa8', '#c9743a', '#3a7ca8'];
+const avHTML = (a, nick, size, staff) => staff ? `<img class="cav" style="width:${size}px;height:${size}px;object-fit:contain;padding:5px;background:var(--bg2)" src="logo.png" alt="">`
+  : a && a.startsWith('data:') ? `<img class="cav" style="width:${size}px;height:${size}px" src="${a}" alt="">`
+  : `<span class="cav" style="width:${size}px;height:${size}px;background:${AVC[(+String(a || 'p1').slice(1) - 1) || 0]};font-size:${size * .48}px">${esc((nick || '?')[0].toUpperCase())}</span>`;
+const ago = iso => { const s = (Date.now() - new Date(iso)) / 1000; return s < 60 ? 'just now' : s < 3600 ? Math.floor(s / 60) + ' min ago' : s < 86400 ? Math.floor(s / 3600) + ' h ago' : Math.floor(s / 86400) + ' d ago'; };
+const cShow = id => ['c-closed', 'c-join', 'c-main'].forEach(x => $('#' + x).hidden = x !== id);
+const imgFit = (f, w, h, q, cover) => new Promise(res => { const im = new Image(); im.onload = () => { let tw = w, th = h, sx = 0, sy = 0, sw = im.width, sh = im.height;
+  if (cover) { const s = Math.min(im.width, im.height); sx = (im.width - s) / 2; sy = (im.height - s) / 2; sw = sh = s; } else { const k = Math.min(1, w / Math.max(im.width, im.height)); tw = Math.round(im.width * k); th = Math.round(im.height * k); }
+  const c = document.createElement('canvas'); c.width = tw; c.height = th; c.getContext('2d').drawImage(im, sx, sy, sw, sh, 0, 0, tw, th); URL.revokeObjectURL(im.src); res(c.toDataURL('image/jpeg', q)); }; im.src = URL.createObjectURL(f); });
+function drawAvs(sel) { $(sel).innerHTML = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'].map(a => `<button class="avb${avPick === a ? ' on' : ''}" data-av="${a}">${avHTML(a, 'K', 44)}</button>`).join('') + (avUpload ? `<button class="avb${avPick === 'up' ? ' on' : ''}" data-av="up">${avHTML(avUpload, 'K', 44)}</button>` : ''); }
+async function openComm() {
+  show('s-comm'); const r = await call('community_me'); if (r.error) { toast(r.error); return; } cme = r;
+  if (!r.enabled) return cShow('c-closed');
+  if (!r.joined) { $('#c-agemsg').hidden = r.age_ok; $('#c-joinbtn').disabled = !r.age_ok; drawAvs('#c-avs'); return cShow('c-join'); }
+  cShow('c-main'); $('#c-photobtn').hidden = !r.photo_ok;
+  $('#c-note').textContent = !r.has_purchase ? 'Make your first purchase to start posting.' : r.approval ? 'Posts are reviewed before they appear.' : '';
+  $('#me-av').innerHTML = avHTML(r.avatar, r.nickname, 80); $('#me-nick').textContent = r.nickname; $('#me-since').textContent = st.since ? 'Member since ' + st.since : '';
+  setCTab(cTab);
+}
+function setCTab(t) { cTab = t; all('#c-tabs button', b => b.classList.toggle('on', b.dataset.ct === t)); ['feed', 'photos', 'me'].forEach(x => $('#ct-' + x).hidden = x !== t);
+  if (t === 'feed') loadFeed(); if (t === 'photos') loadPhotos(); if (t === 'me') drawAvs('#me-avs'); }
+const postCard = p => `<div class="cpost" data-id="${p.id}"><div class="chead">${avHTML(p.avatar, p.nick, 40, p.staff)}<div><a href="#" class="cnick" data-nick="${esc(p.nick)}">${esc(p.nick)}</a>${p.staff ? '<span class="tag">Staff</span>' : ''}${p.pinned ? '<span class="tag">Pinned</span>' : ''}<div class="small" style="text-align:left;margin:0">${ago(p.t)}</div></div></div>
+  <p class="cbody">${esc(p.body)}</p>${p.has_photo ? `<img class="cphoto ph" data-pid="${p.id}" src="logo.png" alt="">` : ''}
+  <div class="cact"><button class="mini${p.liked ? ' on' : ''}" data-like="${p.id}" data-on="${p.liked ? 1 : 0}">♥ <span>${p.likes}</span></button><button class="mini" data-cm="${p.id}">💬 ${p.comments}</button>${p.mine ? `<button class="mini" data-cdel="post:${p.id}">Delete</button>` : `<button class="mini" data-crep="post:${p.id}">Report</button>`}</div><div class="ccom" id="cc${p.id}" hidden></div></div>`;
+function lazyPhotos(root) { root.querySelectorAll('img[data-pid]').forEach(async im => { const r = await call('get_cphoto', { p_id: +im.dataset.pid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } }); }
+async function loadFeed(more) {
+  const args = {}; if (more && feedLast) args.p_before = feedLast;
+  const r = await call('community_feed', args); if (r.error) { toast(r.error); return; }
+  if (!more) { $('#c-feed').innerHTML = ''; $('#c-pending').innerHTML = (r.mine_pending || []).map(p => `<div class="cpost" style="opacity:.75"><b style="color:var(--gold)">Waiting for approval</b><p class="cbody" style="margin-bottom:0">${esc(p.body)}</p></div>`).join(''); }
+  $('#c-feed').insertAdjacentHTML('beforeend', r.posts.map(postCard).join('') || (more ? '' : empty('No posts yet. Be the first to say hello!')));
+  const ids = r.posts.filter(p => !p.pinned).map(p => p.id); if (ids.length) feedLast = Math.min(...ids); $('#c-more').hidden = r.posts.length < 20; lazyPhotos($('#c-feed'));
+}
+$('#c-more').onclick = () => loadFeed(true);
+async function loadPhotos() {
+  const r = await call('community_feed', { p_photos: true }); if (r.error) { toast(r.error); return; }
+  $('#c-gal').innerHTML = r.posts.map(p => `<figure><img class="ph" data-pid="${p.id}" data-open="${p.id}" src="logo.png" alt=""><figcaption>${esc(p.nick)}</figcaption></figure>`).join('') || empty('No photos yet.');
+  lazyPhotos($('#c-gal')); window._cphotos = r.posts;
+}
+const modal = h => { $('#c-modal').innerHTML = `<div class="cbox2">${h}<button class="btn ghost" id="c-mclose">Close</button></div>`; $('#c-modal').hidden = false; $('#c-mclose').onclick = () => $('#c-modal').hidden = true; };
+async function showProfile(nick) {
+  const r = await call('community_profile', { p_nick: nick }); if (r.error) { toast(r.error); return; }
+  modal(`<div style="text-align:center">${avHTML(r.avatar, r.nick, 80)}<h2 style="margin-top:8px">${esc(r.nick)}</h2><p class="small">Member since ${esc(r.since)} · ${r.count} post${r.count === 1 ? '' : 's'}</p></div>${r.posts.map(p => `<div class="hrow" style="display:block"><span class="small">${ago(p.t)}</span><p style="margin:2px 0;color:var(--ink);text-align:left">${esc(p.body)}${p.has_photo ? ' 📷' : ''}</p></div>`).join('')}`);
+}
+async function loadComments(id) {
+  const box = $('#cc' + id), r = await call('community_comments', { p_post: id }); if (!Array.isArray(r)) return;
+  box.innerHTML = r.map(c => `<div class="cc">${avHTML(c.avatar, c.nick, 28)}<div style="flex:1"><a href="#" class="cnick" data-nick="${esc(c.nick)}" style="font-size:.9rem">${esc(c.nick)}</a> <span class="small">${ago(c.t)}</span><p>${esc(c.body)}</p></div>${c.mine ? `<button class="mini" data-cdel="comment:${c.id}">✕</button>` : `<button class="mini" data-crep="comment:${c.id}">Report</button>`}</div>`).join('')
+    + `<input class="cin" id="ci${id}" maxlength="300" placeholder="Write a comment…"><button class="mini" data-csend="${id}" style="margin-top:6px">Send</button>`;
+}
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-like],[data-cm],[data-csend],[data-crep],[data-cdel],[data-nick],[data-open],[data-av]'); if (!t || !$('#s-comm') || $('#s-comm').hidden) return; const d = t.dataset;
+  if (d.nick) { e.preventDefault(); return showProfile(d.nick); }
+  if (d.like) { const on = d.on === '0', r = await call('community_like', { p_post: +d.like, p_on: on }); if (r.error) return toast(r.error);
+    const n = t.querySelector('span'); n.textContent = +n.textContent + (on ? 1 : -1); t.dataset.on = on ? 1 : 0; t.classList.toggle('on', on); }
+  if (d.cm) { const box = $('#cc' + d.cm); box.hidden = !box.hidden; if (!box.hidden) loadComments(d.cm); }
+  if (d.csend) { const inp = $('#ci' + d.csend), r = await call('community_comment', { p_post: +d.csend, p_body: inp.value }); if (r.error) return toast(r.error); loadComments(d.csend); }
+  if (d.crep) { const [k, id] = d.crep.split(':'), why = prompt('Why are you reporting this? (optional)'); if (why === null) return; const r = await call('community_report', { p_kind: k, p_id: +id, p_reason: why }); toast(r.error || 'Thanks. Our team will take a look.'); }
+  if (d.cdel) { if (!confirm('Delete this?')) return; const [k, id] = d.cdel.split(':'); await call('community_delete', { p_kind: k, p_id: +id }); if (k === 'post') loadFeed(); else { const box = t.closest('.ccom'); loadComments(box.id.slice(2)); } }
+  if (d.open) { const p = (window._cphotos || []).find(x => x.id == d.open); modal(`<img class="big" src="${t.src}" alt=""><b>${esc(p ? p.nick : '')}</b><p style="text-align:left;color:var(--ink)">${esc(p ? p.body : '')}</p>`); }
+  if (d.av) { avPick = d.av; if (t.closest('#me-avs')) { const a = d.av === 'up' ? avUpload : d.av, r = await call('community_set_avatar', { p_avatar: a }); if (r.error) return toast(r.error); cme.avatar = a; $('#me-av').innerHTML = avHTML(a, cme.nickname, 80); drawAvs('#me-avs'); toast('Picture updated'); } else drawAvs('#c-avs'); }
+});
+document.addEventListener('change', async e => {
+  const id = e.target.id, f = e.target.files && e.target.files[0]; if (!f) return;
+  if (id === 'c-avfile' || id === 'me-avfile') { avUpload = await imgFit(f, 96, 96, .7, true); avPick = 'up'; if (id === 'c-avfile') drawAvs('#c-avs'); else { const r = await call('community_set_avatar', { p_avatar: avUpload }); if (r.error) return toast(r.error); cme.avatar = avUpload; $('#me-av').innerHTML = avHTML(avUpload, cme.nickname, 80); drawAvs('#me-avs'); toast('Picture updated'); } }
+  if (id === 'c-file') { cPhoto = await imgFit(f, 800, 800, .7, false); $('#c-prev').src = cPhoto; $('#c-prev').hidden = false; }
+});
+all('#c-tabs button', b => b.onclick = () => setCTab(b.dataset.ct));
+$('#open-comm').onclick = openComm; $('#open-comm2').onclick = openComm;
+$('#c-joinbtn').onclick = async () => {
+  $('#c-err').textContent = ''; if (!$('#c-agree').checked) { $('#c-err').textContent = 'Please tick the box to agree.'; return; }
+  const r = await call('community_join', { p_nick: $('#c-nick').value, p_avatar: avPick === 'up' ? avUpload : avPick }); if (r.error) { $('#c-err').textContent = r.error; return; }
+  toast('Welcome to the community!'); openComm();
+};
+$('#c-post').onclick = async () => {
+  const b = $('#c-body').value.trim(); if (!b) { toast('Write something first.'); return; }
+  $('#c-post').disabled = true; const r = await call('community_post', { p_body: b, p_photo: cPhoto }); $('#c-post').disabled = false; if (r.error) { toast(r.error); return; }
+  $('#c-body').value = ''; cPhoto = null; $('#c-prev').hidden = true; toast(r.pending ? 'Thanks! Your post is waiting for approval.' : 'Posted!'); loadFeed();
+};
+$('#c-leave').onclick = async e => { e.preventDefault(); if (!confirm('Leave the community? Your nickname, posts, comments and likes will be deleted.')) return; const r = await call('community_leave'); if (r.error) return toast(r.error); toast('You left the community.'); openComm(); };
 
 // ---- replies to my feedback ----
 async function loadFb() {
