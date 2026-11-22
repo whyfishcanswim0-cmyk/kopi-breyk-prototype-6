@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#4a0e1a">
 <link rel="icon" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("kb_theme")||"";try{document.documentElement.dataset.season=JSON.parse(localStorage.getItem("kb_season")||"{}").theme||""}catch(e){}</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,6 +18,7 @@
     <div class="btns"><a class="btn" href="/app">Join rewards</a><a class="btn ghost" href="/menu">See the menu</a><a class="btn ghost" href="/app#explore">Reserve</a></div></div></section>
 
   <section id="about" hidden><h2 class="mh">About us</h2><p id="about-t" style="white-space:pre-line;color:var(--ink)"></p></section>
+  <section id="tm-s" hidden><h2 class="mh">What guests say</h2><div class="tms" id="tm"></div></section>
   <section id="gal-s" hidden><h2 class="mh">Gallery</h2><div class="gal" id="gal"></div></section>
   <section id="ev-s" hidden><h2 class="mh">What’s on</h2><div id="ev"></div><p><a href="/events" style="color:var(--gold)">See all events and announcements ›</a></p></section>
   <section id="info" hidden><h2 class="mh">Visit us</h2><div class="info" id="info-b"></div></section>
@@ -50,6 +52,8 @@ const link = (u, t) => /^https?:\/\//.test(u) ? `<a href="${esc(u)}" target="_bl
   if (t.facebook || t.instagram) rows.push(`<div><b>Follow us</b><p>${link(t.facebook, 'Facebook')} ${link(t.instagram, 'Instagram')}</p></div>`);
   if (rows.length) { $('#info').hidden = false; $('#info-b').innerHTML = rows.join(''); }
 })();
+rpc('get_testimonials').then(t => { if (!Array.isArray(t) || !t.length) return; document.querySelector('#tm-s').hidden = false;
+  document.querySelector('#tm').innerHTML = t.map(x => `<div class="tq"><div class="st">${'★'.repeat(x.rating)}</div><p>“${esc(x.message)}”</p><div class="who2">${esc(x.name)}</div></div>`).join(''); });
 </script>
 </body>
 </html>
