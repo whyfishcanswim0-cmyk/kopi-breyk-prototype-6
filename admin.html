@@ -34,7 +34,7 @@
 
     <div class="tab" id="t-sales" hidden><p class="small">Last 100 sales entered by cashiers. Void a wrong entry to reverse its points.</p><div class="scroll"><table><thead><tr><th>Time</th><th>Customer</th><th>Receipt</th><th>Total</th><th>Pts +/-</th><th></th></tr></thead><tbody id="salesrows"></tbody></table></div></div>
 
-    <div class="tab" id="t-fb" hidden><div class="stat" id="fbsum"></div><div class="scroll"><table><thead><tr><th>Time</th><th>Customer</th><th>Rating</th><th>Feedback</th></tr></thead><tbody id="fbrows"></tbody></table></div></div>
+    <div class="tab" id="t-fb" hidden><div class="stat" id="fbsum"></div><div class="scroll"><table><thead><tr><th>Time</th><th>Customer</th><th>Rating</th><th>Feedback</th><th>On website</th></tr></thead><tbody id="fbrows"></tbody></table></div></div>
 
     <div class="tab" id="t-bd" hidden><p class="small">Birthdays in the next 30 days. “Greet” opens your messaging app with a birthday message ready to send.</p><div class="scroll"><table><thead><tr><th>When</th><th>Customer</th><th>Mobile</th><th>Turning</th><th>Bonus spin</th><th></th></tr></thead><tbody id="bdrows"></tbody></table></div></div>
 
@@ -87,6 +87,10 @@
       <h2 style="margin-top:30px">Cashier PIN</h2>
       <p>Cashiers type this on the customer’s phone to confirm a prize.</p>
       <div class="row"><div><input id="cpin" class="pin" inputmode="numeric" maxlength="6" placeholder="New 4-6 digits"></div><button class="btn" id="csave">Save PIN</button></div>
+      <h2 style="margin-top:30px">Seasonal theme</h2>
+      <p class="small">Changes the colors of your public pages and the rewards app, with an optional gentle falling decoration (snow, hearts, or bats). Customers see it the next time they open the app.</p>
+      <div class="row"><div><label for="season">Theme</label><select id="season"><option value="">Kopi Breyk (maroon and gold)</option><option value="christmas">Christmas</option><option value="valentines">Valentine’s</option><option value="halloween">Halloween</option></select></div>
+        <div><label style="display:flex;gap:8px;align-items:center"><input id="fx" type="checkbox" style="width:auto"> Falling decorations</label></div><button class="btn" data-a="season-save">Save theme</button></div>
       <h2 style="margin-top:30px">Points</h2>
       <div class="row"><div><label for="ppp">Peso value of 1 point</label><input id="ppp" type="number" min="0" step="0.5"></div><div><label for="wp">Welcome points</label><input id="wp" type="number" min="0"></div><div><label for="mr">Minimum points to redeem</label><input id="mr" type="number" min="0"></div><button class="btn" id="psave">Save</button></div>
       <h2 style="margin-top:30px">Prize budget and referrals</h2>
@@ -133,7 +137,7 @@ function prow(p) {
   <td><button class="mini" data-a="psave">Save</button>${p.id ? '<button class="mini bad" data-a="pdel">Delete</button>' : ''}</td></tr>`;
 }
 const renderSales = () => $('#salesrows').innerHTML = sales.map(x => `<tr><td>${esc(x.t)}</td><td>${esc(x.username)}</td><td>${esc(x.receipt_no)}</td><td>₱${x.amount}</td><td>+${x.earned} / −${x.used}</td><td>${x.voided ? 'voided' : `<button class="mini bad" data-a="void" data-id="${x.id}">Void</button>`}</td></tr>`).join('') || '<tr><td colspan="6">No sales yet.</td></tr>';
-const renderFeedback = () => $('#fbrows').innerHTML = feedback.map(x => `<tr><td>${esc(x.t)}</td><td>${esc(x.username)}</td><td style="color:var(--gold);white-space:nowrap">${'★'.repeat(x.rating)}${'☆'.repeat(5 - x.rating)}</td><td>${esc(x.message)}</td></tr>`).join('') || '<tr><td colspan="4">No feedback yet.</td></tr>';
+const renderFeedback = () => $('#fbrows').innerHTML = feedback.map(x => `<tr><td>${esc(x.t)}</td><td>${esc(x.username)}</td><td style="color:var(--gold);white-space:nowrap">${'★'.repeat(x.rating)}${'☆'.repeat(5 - x.rating)}</td><td>${esc(x.message)}${x.reply ? `<br><span class="small">Your reply: ${esc(x.reply)}</span>` : ''}</td><td><button class="mini" data-a="fb-reply" data-id="${x.id}">${x.reply ? 'Edit reply' : 'Reply'}</button> ${x.public_ok ? (x.approved ? `<button class="mini" data-a="fb-off" data-id="${x.id}">Showing · hide</button>` : `<button class="mini" data-a="fb-on" data-id="${x.id}">Show on website</button>`) : '<span class="small">no permission</span>'}</td></tr>`).join('') || '<tr><td colspan="5">No feedback yet.</td></tr>';
 const irow = i => { i = i || { id: '', name: '', description: '', price: '', available: true, sort: 0, has_photo: false, tags: [], special: false };
   return `<tr data-id="${i.id}"><td><img class="th ph" src="logo.png" ${i.has_photo ? `data-pid="${i.id}"` : ''}><label class="mini">Photo<input type="file" accept="image/*" class="i-file" hidden></label></td>
   <td><input type="text" class="i-name" value="${esc(i.name)}" placeholder="Name"></td><td><input type="text" class="i-desc" value="${esc(i.description)}" placeholder="Description (optional)"></td>
@@ -161,7 +165,7 @@ const T = () => site.texts || {};
 const renderSite = () => {
   const t = T(), set = (id, k) => { if (document.activeElement !== $(id)) $(id).value = t[k] || ''; };
   set('#s-tagline', 'tagline'); set('#s-about', 'about'); set('#s-hours', 'hours'); set('#s-address', 'address'); set('#s-map', 'map_url'); set('#s-phone', 'phone'); set('#s-email', 'email'); set('#s-fb', 'facebook'); set('#s-ig', 'instagram'); set('#b-text', 'banner_text'); set('#b-until', 'banner_until');
-  $('#b-on').checked = t.banner_on === '1';
+  $('#b-on').checked = t.banner_on === '1'; $('#season').value = t.theme || ''; $('#fx').checked = t.theme_fx !== '0';
   const hero = site.images.find(i => i.slot === 'hero'); $('#hero-state').textContent = hero ? 'A main photo is set.' : 'No main photo yet.'; $('#hero-del').hidden = !hero; $('#hero-del').dataset.id = hero ? hero.id : '';
   $('#imgs').innerHTML = site.images.filter(i => i.slot === 'gallery').map(i => `<div><img class="th ph" data-sid="${i.id}" src="logo.png"><span class="small">${esc(i.caption)}</span><br><button class="mini bad" data-a="img-del" data-id="${i.id}">Delete</button></div>`).join('');
   document.querySelectorAll('#imgs img[data-sid]').forEach(async im => { const r = await rpc('get_site_image', { p_id: +im.dataset.sid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } });
@@ -185,6 +189,10 @@ document.addEventListener('click', async e => {
   if (a === 'site-save') { const g = id => $(id).value, d = { tagline: g('#s-tagline'), about: g('#s-about'), hours: g('#s-hours'), address: g('#s-address'), map_url: g('#s-map'), phone: g('#s-phone'), email: g('#s-email'), facebook: g('#s-fb'), instagram: g('#s-ig'), banner_text: g('#b-text'), banner_until: g('#b-until'), banner_on: $('#b-on').checked ? '1' : '0' };
     const r = await A('admin_save_site', { p_data: d }); toast(r.error || 'Website saved'); await loadAll(); }
   if (a === 'hero-del' || a === 'img-del') { if (!confirm('Delete this photo?')) return; await A('admin_delete_image', { p_id: +b.dataset.id }); await loadAll(); }
+  if (a === 'fb-on' || a === 'fb-off') { await A('admin_approve_feedback', { p_id: b.dataset.id, p_ok: a === 'fb-on' }); await loadAll(); }
+  if (a === 'season-save') { const r = await A('admin_save_site', { p_data: { theme: $('#season').value, theme_fx: $('#fx').checked ? '1' : '0' } }); toast(r.error || 'Theme saved'); await loadAll(); }
+  if (a === 'fb-reply') { const f = feedback.find(z => z.id === b.dataset.id); const t = prompt('Reply to ' + f.username + '. They will see it in their Profile. Leave empty to remove your reply:', f.reply || ''); if (t === null) return;
+    const r = await A('admin_reply_feedback', { p_id: b.dataset.id, p_text: t }); toast(r.error || 'Reply saved'); await loadAll(); }
   if (a === 'post-new') fillPost(null);
   if (a === 'post-edit') fillPost(posts.find(p => p.id == b.dataset.id));
   if (a === 'post-save') { const sp = $('#p-spots').value;
