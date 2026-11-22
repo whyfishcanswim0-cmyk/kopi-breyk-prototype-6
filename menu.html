@@ -7,10 +7,11 @@
 <meta name="theme-color" content="#4a0e1a">
 <link rel="icon" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("kb_theme")||"";try{document.documentElement.dataset.season=JSON.parse(localStorage.getItem("kb_season")||"{}").theme||""}catch(e){}</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main>
+<main class="wide">
   <div class="brand"><span><img src="logo.png" alt="">Our menu</span><nav class="topnav"><a href="/">Home</a><a href="/app">Rewards</a></nav></div>
   <div class="chips" id="chips"></div>
   <div id="menu"><p class="small">Loading…</p></div>
@@ -20,7 +21,9 @@
 <script>
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const peso = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
-const row = i => `<div class="mi${i.available ? '' : ' so'}"><img class="mp ph" data-pid="${i.has_photo ? i.id : ''}" src="logo.png" alt=""><div class="mt"><b>${esc(i.name)}</b>${(i.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}${i.description ? `<p>${esc(i.description)}</p>` : ''}${i.available ? '' : '<p class="soldout">Sold out</p>'}</div><div class="mpr">${peso(i.price)}</div></div>`;
+const ic = { Vegan: '🌿', Spicy: '🌶️', New: '✨', Bestseller: '⭐' };
+const row = i => `<div class="mc${i.available ? '' : ' so'}"><img class="ph" data-pid="${i.has_photo ? i.id : ''}" src="logo.png" alt=""><div class="mb"><b>${esc(i.name)}</b>${(i.tags || []).length ? `<div class="tags">${i.tags.map(t => `<span>${ic[t] || ''} ${esc(t)}</span>`).join('')}</div>` : ''}${i.description ? `<p class="d">${esc(i.description)}</p>` : ''}<div class="mpr">${i.available ? peso(i.price) : '<span class="soldout">Sold out</span>'}</div></div></div>`;
+const grid = items => `<div class="mgrid">${items.map(row).join('')}</div>`;
 (async () => {
   const m = await rpc('get_menu');
   if (m.error) { document.querySelector('#menu').innerHTML = '<p class="err">' + esc(m.error) + '</p>'; return; }
@@ -28,7 +31,7 @@ const row = i => `<div class="mi${i.available ? '' : ' so'}"><img class="mp ph" 
   if (!cats.length) { document.querySelector('#menu').innerHTML = '<p>Our menu is coming soon.</p>'; return; }
   const sp = cats.flatMap(c => c.items).filter(i => i.special && i.available);
   document.querySelector('#chips').innerHTML = (sp.length ? '<a href="#special">Today’s special</a>' : '') + cats.map(c => `<a href="#c${c.id}">${esc(c.name)}</a>`).join('');
-  document.querySelector('#menu').innerHTML = (sp.length ? '<h2 id="special" class="mh">Today’s special</h2>' + sp.map(row).join('') : '') + cats.map(c => `<h2 id="c${c.id}" class="mh">${esc(c.name)}</h2>` + c.items.map(row).join('')).join('');
+  document.querySelector('#menu').innerHTML = (sp.length ? '<h2 id="special" class="mh">Today’s special</h2>' + grid(sp) : '') + cats.map(c => `<h2 id="c${c.id}" class="mh">${esc(c.name)}</h2>` + grid(c.items)).join('');
   document.querySelectorAll('img[data-pid]').forEach(async im => {
     if (!im.dataset.pid) return; const r = await rpc('get_menu_photo', { p_id: +im.dataset.pid });
     if (r.photo) { document.querySelectorAll(`img[data-pid="${im.dataset.pid}"]`).forEach(x => { x.src = r.photo; x.classList.remove('ph'); }); }
