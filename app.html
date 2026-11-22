@@ -8,11 +8,14 @@
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("kb_theme")||"";try{document.documentElement.dataset.season=JSON.parse(localStorage.getItem("kb_season")||"{}").theme||""}catch(e){}</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
   <div class="brand"><span><img src="logo.png" alt="">Kopi Breyk</span><button id="logout" hidden>Log out</button></div>
+
+  <section class="screen" id="s-load"><div class="skel" style="height:34px;width:60%"></div><div class="skel" style="height:230px;margin-top:18px"></div><div class="skel" style="height:90px;margin-top:16px"></div></section>
 
   <section class="screen" id="s-auth" hidden>
     <h1>Welcome to Kopi Breyk Rewards</h1>
@@ -47,9 +50,15 @@
   <section class="screen" id="s-home" hidden>
     <div class="pane" id="p-home">
       <p class="bonus" id="promo" hidden style="margin-bottom:14px"></p>
-      <h2>Hello, <span class="who"></span></h2>
+      <h2><span id="greet">Hello</span>, <span class="who"></span></h2>
       <div class="free-box" id="ph-banner" hidden><b>Add your photo</b>Needed before you can use your points.<button class="btn" id="ph-open">Add photo</button></div>
-      <div class="card"><div class="pts" id="pts">0</div><p class="small" style="margin-top:6px">points</p><p class="small" id="ptsval"></p></div>
+      <div class="card cupcard">
+        <svg id="cup" viewBox="0 0 120 130" aria-hidden="true"><defs><clipPath id="cupclip"><path d="M20 42h80l-8 58a14 14 0 0 1-14 12H42a14 14 0 0 1-14-12z"/></clipPath><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--gold)"/><stop offset="1" style="stop-color:#8c5a1f"/></linearGradient></defs>
+          <g clip-path="url(#cupclip)"><rect id="cup-fill" x="0" y="42" width="120" height="70" fill="url(#cg)" style="transform:scaleY(0)"/></g>
+          <path class="line" d="M20 42h80l-8 58a14 14 0 0 1-14 12H42a14 14 0 0 1-14-12z"/><path class="line" d="M100 52h6a12 12 0 0 1 0 28h-8"/><path class="line" d="M12 120h96"/>
+          <path class="steam" d="M45 32c-7-7 7-11 0-20"/><path class="steam s2" d="M60 32c-7-7 7-11 0-20"/><path class="steam s3" d="M75 32c-7-7 7-11 0-20"/></svg>
+        <div class="pts" id="pts">0</div><p class="small" style="margin-top:4px">points</p><p class="small" id="ptsval"></p></div>
+      <div class="row2" id="special" hidden><h2 style="font-size:1.3rem">Today’s special</h2><p class="small" id="special-t" style="margin:0 0 8px"></p><a class="mini" href="/menu" style="text-decoration:none;display:inline-block">View the menu ›</a></div>
       <div class="free-box" id="pending" hidden><b>You have a prize to claim</b><span id="pend-name"></span><button class="btn" id="to-prize">View my prize</button></div>
       <p class="bonus" id="bonus-note" hidden></p>
       <div class="row2" id="home-spin" hidden style="margin-top:16px"><h2>You have <span id="spins2">0</span> free spin(s)</h2><button class="btn" id="to-wheel2">Spin the wheel</button></div>
@@ -63,7 +72,7 @@
     </div>
     <div class="pane" id="p-qr" hidden>
       <h2>My member QR</h2>
-      <div class="card" style="text-align:center"><img id="avatar" class="avatar" hidden><div class="qrbox" id="qr"></div><p class="small" id="mcode"></p><p class="small">Show this to the cashier before you pay.</p></div>
+      <div class="mcard"><img src="logo.png" class="wm" alt=""><div class="mtop"><img id="avatar" class="avatar" hidden><div><div class="mname" id="mname"></div><div class="small" id="msince" style="margin:0"></div></div></div><div class="qrbox" id="qr"></div><p class="mcode" id="mcode"></p><p class="small" style="margin:0">Show this to the cashier before you pay.</p></div>
     </div>
     <div class="pane" id="p-explore" hidden>
       <h2>Explore</h2>
@@ -88,9 +97,12 @@
       <div class="card" id="fb" style="margin-top:20px"><h2>Tell us about your visit</h2>
         <div id="fb-form"><div class="stars" id="stars"><button data-v="1">★</button><button data-v="2">★</button><button data-v="3">★</button><button data-v="4">★</button><button data-v="5">★</button></div>
           <textarea id="fb-msg" rows="3" maxlength="1000" placeholder="Your feedback (optional)"></textarea>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:.85rem;color:var(--mut)"><input type="checkbox" id="fb-pub" style="margin-top:3px">You may show my feedback on the Kopi Breyk website (first name only).</label>
           <button class="btn" id="fb-go">Send feedback</button><p class="small" style="margin-top:10px">Your feedback goes privately to our team.</p></div>
         <p id="fb-done" hidden>Thank you! Your feedback helps us serve you better.</p>
         <p class="small" id="g-wrap" style="margin-top:14px"><a id="g-link" target="_blank" rel="noopener">Share your experience on Google ›</a></p></div>
+      <div class="card" id="myfb" hidden style="text-align:left"><h2>Your feedback</h2><div id="myfb-list"></div></div>
+      <div class="row2"><h2 style="font-size:1.3rem">Appearance</h2><div class="tabs" id="theme-tabs"><button data-th="">Dark</button><button data-th="light">Light</button></div><button class="mini" id="snd">Sound: on</button> <button class="mini" id="tour-again">How it works</button></div>
       <button class="btn ghost" id="logout2">Log out</button>
       <p class="small" style="text-align:center;margin-top:18px"><a href="/privacy" target="_blank" style="color:var(--mut)">Privacy notice</a> · <a href="#" id="del-acc" style="color:var(--bad)">Delete my account</a></p>
     </div>
@@ -125,13 +137,15 @@
     <button class="btn" id="redeem-go">Mark as Redeemed</button>
   </section>
 </main>
-<nav id="nav" hidden>
+<nav id="nav" hidden><i id="nav-ind"></i>
   <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
   <button data-tab="rewards"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M8 8a2.5 2.5 0 1 1 0-5c2.5 0 4 5 4 5s1.5-5 4-5a2.5 2.5 0 1 1 0 5"/></svg><span>Rewards</span></button>
   <button data-tab="qr" class="qr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h3M21 17v4"/></svg><span>My QR</span></button>
   <button data-tab="explore"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Explore</span></button>
   <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></button>
 </nav>
+<canvas id="confetti" hidden></canvas>
+<div id="tour" hidden><div class="tbox"><div id="tour-body"></div><div class="tdots" id="tour-dots"></div><div class="row"><button class="btn ghost" id="tour-skip">Skip</button><button class="btn" id="tour-next">Next</button></div></div></div>
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -183,18 +197,72 @@ $('#code-go').onclick = async () => {
   toast('Welcome gift added!'); route(r);
 };
 
+// ---- look & feel ----
+const hr = () => +new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Manila', hour: '2-digit', hour12: false }).format(new Date());
+const greeting = () => { const h = hr(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; };
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const empty = t => `<div class="empty"><svg viewBox="0 0 24 24"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 3v2M11 3v2M14 3v2"/></svg><p>${t}</p></div>`;
+let lastPts = 0;
+function countUp(el, to) {
+  const from = lastPts; lastPts = to; if (from === to || reduced()) { el.textContent = to; return; }
+  const t0 = performance.now(), step = t => { const p = Math.min((t - t0) / 900, 1); el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+}
+function renderCup() { const ratio = Math.min(st.points / minRedeem, 1); $('#cup-fill').style.transform = `scaleY(${ratio})`; $('#cup').classList.toggle('full', ratio >= 1); }
+let menuCache = null;
+async function loadSpecial() {
+  if (!menuCache) { const m = await rpc('get_menu'); menuCache = Array.isArray(m) ? m : []; }
+  const sp = menuCache.flatMap(c => c.items).filter(i => i.special && i.available);
+  $('#special').hidden = !sp.length; if (sp.length) $('#special-t').textContent = sp.map(i => `${i.name} · ₱${i.price}`).join('   ');
+}
+function confetti() {
+  if (reduced()) return; const c = $('#confetti'), x = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight; c.hidden = false;
+  const cols = ['#d4af5f', '#f6ecd8', '#a33a4d', '#f2d27a'];
+  const P = [...Array(130)].map(() => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * .5, w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, vx: -1.5 + Math.random() * 3, vy: 2 + Math.random() * 4, r: Math.random() * 6, vr: -.2 + Math.random() * .4, c: cols[Math.floor(Math.random() * cols.length)] }));
+  const t0 = performance.now();
+  (function f(t) { x.clearRect(0, 0, c.width, c.height); P.forEach(p => { p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); x.restore(); });
+    if (t - t0 < 2600) requestAnimationFrame(f); else { x.clearRect(0, 0, c.width, c.height); c.hidden = true; } })(t0);
+}
+let snd = localStorage.getItem('kb_snd') !== '0', actx = null;
+const sndLabel = () => $('#snd').textContent = 'Sound: ' + (snd ? 'on' : 'off');
+$('#snd').onclick = () => { snd = !snd; localStorage.setItem('kb_snd', snd ? '1' : '0'); sndLabel(); }; sndLabel();
+function tickSound() {
+  if (!snd) return; if (navigator.vibrate) navigator.vibrate(8);
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 1500;
+    g.gain.setValueAtTime(.06, actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + .05); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + .05); } catch (e) {}
+}
+function scheduleTicks(total) { for (let k = 1; k <= total; k++) setTimeout(tickSound, 5200 * (1 - Math.pow(1 - k / total, 1 / 3.5))); }
+function applyTheme(t) { document.documentElement.dataset.theme = t; localStorage.setItem('kb_theme', t); all('#theme-tabs button', b => b.classList.toggle('on', b.dataset.th === t)); }
+all('#theme-tabs button', b => b.onclick = () => applyTheme(b.dataset.th)); applyTheme(localStorage.getItem('kb_theme') || '');
+const TOUR = [['Earn points', 'Every ₱100 you spend earns 1 point. Once you have 50 points, you can use them to lower your bill.'], ['Keep your streak', 'Order 3 days in a row for a free spin. If you miss a day, your 5th visit earns one instead.'], ['Show your QR', 'Open My QR before you pay so the cashier can add your points. Then spin the wheel for treats.']];
+let ti = 0;
+function drawTour() { $('#tour-body').innerHTML = `<h2>${TOUR[ti][0]}</h2><p>${TOUR[ti][1]}</p>`; $('#tour-dots').innerHTML = TOUR.map((_, i) => `<i class="${i === ti ? 'on' : ''}"></i>`).join(''); $('#tour-next').textContent = ti === TOUR.length - 1 ? 'Got it' : 'Next'; }
+function openTour() { ti = 0; drawTour(); $('#tour').hidden = false; }
+function closeTour() { $('#tour').hidden = true; if (creds) localStorage.setItem('kb_tour_' + creds.u, '1'); }
+$('#tour-next').onclick = () => { if (ti < TOUR.length - 1) { ti++; drawTour(); } else closeTour(); };
+$('#tour-skip').onclick = closeTour; $('#tour-again').onclick = openTour;
+
 // ---- bottom navigation ----
 let tab = localStorage.getItem('kb_tab') || 'home';
 function setTab(t, user) {
   tab = ['home', 'rewards', 'qr', 'explore', 'me'].includes(t) ? t : 'home'; localStorage.setItem('kb_tab', tab);
   all('.pane', p => p.hidden = p.id !== 'p-' + tab); all('#nav button', b => b.classList.toggle('on', b.dataset.tab === tab));
+  $('#nav-ind').style.transform = 'translateX(' + ['home', 'rewards', 'qr', 'explore', 'me'].indexOf(tab) * 100 + '%)';
   if (tab === 'explore') { loadRes(); loadEvents(); }
-  if (tab === 'me') loadRef();
+  if (tab === 'me') { loadRef(); loadFb(); }
   if (user) window.scrollTo(0, 0);
 }
 all('[data-tab]', b => b.onclick = () => setTab(b.dataset.tab, true));
 $('#to-wheel2').onclick = () => $('#to-wheel').click();
 $('#logout2').onclick = logout;
+
+// ---- replies to my feedback ----
+async function loadFb() {
+  if (!st) return; const r = await call('my_feedback'); if (r.error || !r.items) return;
+  const dot = $('#nav button[data-tab="me"]'), onMe = tab === 'me' && !$('#s-home').hidden;
+  $('#myfb').hidden = !r.items.length;
+  $('#myfb-list').innerHTML = r.items.map(x => `<div style="border-bottom:1px solid var(--line);padding:10px 0"><div style="color:var(--gold)">${'★'.repeat(x.rating)}${'☆'.repeat(5 - x.rating)} <span class="small">${esc(x.t)}</span></div>${x.message ? `<p style="margin:4px 0;color:var(--ink);text-align:left">${esc(x.message)}</p>` : ''}${x.reply ? `<div class="reply"><b>Kopi Breyk replied</b><p style="margin:2px 0 0;text-align:left;color:var(--ink)">${esc(x.reply)}</p></div>` : ''}</div>`).join('');
+  if (onMe && r.unseen > 0) { await call('mark_replies_seen'); dot.classList.remove('dot'); } else dot.classList.toggle('dot', r.unseen > 0);
+}
 
 // ---- refer a friend ----
 async function loadRef() {
@@ -214,7 +282,7 @@ rpc('get_banner').then(b => { if (b && b.text) { $('#promo').textContent = b.tex
 async function loadEvents() {
   const [ps, mine] = await Promise.all([rpc('get_posts'), call('my_rsvps')]); if (!Array.isArray(ps)) return;
   const going = new Set(Array.isArray(mine) ? mine : []);
-  $('#ev-list').innerHTML = ps.map(p => `<div class="post">${p.has_photo ? `<img data-pid="${p.id}" src="logo.png" class="ph" alt="">` : ''}<b>${esc(p.title)}</b>${p.kind === 'event' ? `<p class="small" style="margin:2px 0">${esc(p.dlabel)} · ${esc(p.event_time)} · ${p.going}${p.spots ? '/' + p.spots : ''} going</p>` : ''}${p.body ? `<p style="margin:6px 0;white-space:pre-line">${esc(p.body)}</p>` : ''}${p.kind === 'event' ? `<button class="mini" data-rsvp="${p.id}" data-on="${going.has(p.id) ? 1 : 0}">${going.has(p.id) ? 'Going ✓ (tap to cancel)' : p.spots && p.going >= p.spots ? 'Full' : 'I’m going'}</button>` : ''}</div>`).join('') || '<p class="small">Nothing new right now.</p>';
+  $('#ev-list').innerHTML = ps.map(p => `<div class="post">${p.has_photo ? `<img data-pid="${p.id}" src="logo.png" class="ph" alt="">` : ''}<b>${esc(p.title)}</b>${p.kind === 'event' ? `<p class="small" style="margin:2px 0">${esc(p.dlabel)} · ${esc(p.event_time)} · ${p.going}${p.spots ? '/' + p.spots : ''} going</p>` : ''}${p.body ? `<p style="margin:6px 0;white-space:pre-line">${esc(p.body)}</p>` : ''}${p.kind === 'event' ? `<button class="mini" data-rsvp="${p.id}" data-on="${going.has(p.id) ? 1 : 0}">${going.has(p.id) ? 'Going ✓ (tap to cancel)' : p.spots && p.going >= p.spots ? 'Full' : 'I’m going'}</button>` : ''}</div>`).join('') || empty('Nothing new right now. Check back soon!');
   document.querySelectorAll('#ev-list img[data-pid]').forEach(async im => { const r = await rpc('get_post_photo', { p_id: +im.dataset.pid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } });
 }
 document.addEventListener('click', async e => {
@@ -233,7 +301,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 async function loadRes() {
   if (!st) return; $('#rs-date').min = st.today;
   const r = await call('my_reservations'); if (r.error) return;
-  $('#rs-list').innerHTML = r.map(x => `<div class="hrow" style="align-items:center"><span>${esc(x.kind)}<br><span class="small">${esc(x.dlabel)} · ${esc(x.res_time)} · ${x.guests} guest${x.guests === 1 ? '' : 's'}</span></span><span style="text-align:right">${esc(x.status)}${['pending', 'confirmed'].includes(x.status) ? `<br><button class="mini" data-cancel="${x.id}">Cancel</button>` : ''}${x.admin_note ? `<br><span class="small">${esc(x.admin_note)}</span>` : ''}</span></div>`).join('') || '<p class="small">No reservations yet.</p>';
+  $('#rs-list').innerHTML = r.map(x => `<div class="hrow" style="align-items:center"><span>${esc(x.kind)}<br><span class="small">${esc(x.dlabel)} · ${esc(x.res_time)} · ${x.guests} guest${x.guests === 1 ? '' : 's'}</span></span><span style="text-align:right">${esc(x.status)}${['pending', 'confirmed'].includes(x.status) ? `<br><button class="mini" data-cancel="${x.id}">Cancel</button>` : ''}${x.admin_note ? `<br><span class="small">${esc(x.admin_note)}</span>` : ''}</span></div>`).join('') || empty('No reservations yet. Plan something with us!');
 }
 $('#rs-go').onclick = async () => {
   const d = $('#rs-date').value, t = $('#rs-time').value, g = +$('#rs-guests').value;
@@ -276,7 +344,10 @@ function streakInfo() {
   return ['Attendance', `You missed a day, so your 5th visit now earns a free spin. ${s.cycle} visit${s.cycle === 1 ? '' : 's'} so far.`];
 }
 function renderHome() {
-  $('#pts').textContent = st.points;
+  countUp($('#pts'), st.points); renderCup(); loadFb(); $('#greet').textContent = greeting(); loadSpecial();
+  $('#mname').textContent = st.name || st.username; $('#msince').textContent = st.since ? 'Member since ' + st.since : '';
+  if (st.days.includes(st.today)) setTimeout(() => sessionStorage.setItem('kb_stamp_' + st.today, '1'), 1500);
+  if (!localStorage.getItem('kb_tour_' + creds.u) && $('#tour').hidden) openTour();
   $('#ptsval').textContent = st.points < minRedeem ? `Reach ${minRedeem} points to start using them on your bill.` : `Worth ₱${(st.points * st.peso).toLocaleString('en-PH')} off your bill. Minimum ${minRedeem} points per redemption. Tell the cashier how many to use.`;
   $('#spins').textContent = st.spins; $('#spins2').textContent = st.spins; $('#home-spin').hidden = st.spins < 1; $('#to-wheel').disabled = st.spins < 1;
   $('#bonus-note').hidden = !st.birthday; $('#bonus-note').textContent = st.spins > 0 ? 'Happy birthday! Your next spin is a guaranteed prize.' : 'Happy birthday month! Your next free spin will be a guaranteed prize.';
@@ -284,10 +355,10 @@ function renderHome() {
   $('#pf-name').textContent = st.name || st.username; $('#pf-user').textContent = '@' + st.username; setTab(tab);
   $('#pending').hidden = !st.pending; if (st.pending) $('#pend-name').textContent = st.pending.prize;
   const [t, x] = streakInfo(); ['#st-title', '#st-title2'].forEach(q => $(q).textContent = t); ['#st-txt', '#st-txt2'].forEach(q => $(q).textContent = x);
-  const first = day(st.today, -27), pad = new Date(first + 'T00:00:00Z').getUTCDay(), on = new Set(st.days);
+  const first = day(st.today, -27), pad = new Date(first + 'T00:00:00Z').getUTCDay(), on = new Set(st.days), stampNow = st.days.includes(st.today) && !sessionStorage.getItem('kb_stamp_' + st.today);
   $('#cal').innerHTML = [...'SMTWTFS'].map(c => `<div class="h">${c}</div>`).join('') + '<div class="e"></div>'.repeat(pad) +
-    [...Array(28)].map((_, i) => { const d = day(first, i); return `<div class="${on.has(d) ? 'on' : ''} ${d === st.today ? 't' : ''}">${+d.slice(8)}</div>`; }).join('');
-  all('.hl', e => e.innerHTML = st.history.map(h => `<div class="hrow"><span>${h.d}</span><span>₱${h.amount} · +${h.earned} pts${h.used ? ' · −' + h.used + ' used' : ''}</span></div>`).join('') || '<p class="small">No orders yet.</p>');
+    [...Array(28)].map((_, i) => { const d = day(first, i); return `<div class="${on.has(d) ? 'on' : ''} ${d === st.today ? 't' : ''}${d === st.today && stampNow ? ' stamp' : ''}">${+d.slice(8)}</div>`; }).join('');
+  all('.hl', e => e.innerHTML = st.history.map(h => `<div class="hrow"><span>${h.d}</span><span>₱${h.amount} · +${h.earned} pts${h.used ? ' · −' + h.used + ' used' : ''}</span></div>`).join('') || empty('No orders yet. Your first cup is waiting.'));
 }
 $('#to-prize').onclick = () => { pv = { prize: st.pending.prize, is_win: true }; showPrize(); };
 
@@ -297,7 +368,7 @@ if (GURL) $('#g-link').href = GURL; else $('#g-wrap').hidden = true;
 all('#stars button', b => b.onclick = () => { fbRating = +b.dataset.v; all('#stars button', x => x.classList.toggle('on', +x.dataset.v <= fbRating)); });
 $('#fb-go').onclick = async () => {
   if (!fbRating) { toast('Please tap a star rating first.'); return; }
-  $('#fb-go').disabled = true; const r = await call('submit_feedback', { p_rating: fbRating, p_msg: $('#fb-msg').value }); $('#fb-go').disabled = false;
+  $('#fb-go').disabled = true; const r = await call('submit_feedback', { p_rating: fbRating, p_msg: $('#fb-msg').value, p_public: $('#fb-pub').checked }); $('#fb-go').disabled = false;
   if (r.error) { toast(r.error); return; }
   $('#fb-form').hidden = true; $('#fb-done').hidden = false;
 };
@@ -322,14 +393,14 @@ function drawWheel() {
   });
 }
 $('#spin-go').onclick = async () => {
-  if (spinning) return; spinning = true; $('#spin-go').disabled = true;
+  if (spinning) return; spinning = true; $('#spin-go').disabled = true; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch (e) {}
   const r = await call('spin');
   if (r.error) { toast(r.error); spinning = false; $('#spin-go').disabled = false; return; }
   const i = prizes.findIndex(p => p.id === r.prize_id), seg = 360 / prizes.length;
   const target = -(i + .5) * seg + (Math.random() - .5) * seg * .6;
   const cur = ((rot % 360) + 360) % 360, delta = (((target - cur) % 360) + 360) % 360;
-  rot += 360 * 6 + delta; $('#wheel').style.transform = `rotate(${rot}deg)`;
-  setTimeout(() => { spinning = false; $('#spin-go').disabled = false; st = r; pv = r.result; showPrize(); }, 5400);
+  rot += 360 * 6 + delta; scheduleTicks(Math.round((360 * 6 + delta) / seg)); $('#wheel').style.transform = `rotate(${rot}deg)`;
+  setTimeout(() => { spinning = false; $('#spin-go').disabled = false; st = r; pv = r.result; showPrize(); if (pv.is_win) confetti(); }, 5400);
 };
 
 // ---- prize + live clock ----
