@@ -19,7 +19,7 @@
   </section>
 
   <section id="panel" hidden>
-    <div class="tabs t4" id="tabs"><button class="on" data-t="report">Today</button><button data-t="cust">Customers</button><button data-t="sales">Sales</button><button data-t="fb">Feedback</button><button data-t="bd">Birthdays</button><button data-t="menu">Menu</button><button data-t="res">Reservations</button><button data-t="site">Website</button><button data-t="posts">Posts</button><button data-t="prz">Prizes</button><button data-t="set">Settings</button></div>
+    <div class="tabs t4" id="tabs"><button class="on" data-t="report">Today</button><button data-t="cust">Customers</button><button data-t="sales">Sales</button><button data-t="fb">Feedback</button><button data-t="bd">Birthdays</button><button data-t="menu">Menu</button><button data-t="res">Reservations</button><button data-t="site">Website</button><button data-t="posts">Posts</button><button data-t="comm">Community</button><button data-t="prz">Prizes</button><button data-t="set">Settings</button></div>
 
     <div class="tab" id="t-report">
       <p id="costline" class="small" style="margin:0 0 6px"></p><p id="bdbanner" style="color:var(--gold);font-weight:500;margin:0 0 6px"></p><div class="stat" id="stats"></div>
@@ -74,6 +74,21 @@
       <div class="scroll"><table><thead><tr><th>Post</th><th>When</th><th>Going</th><th></th></tr></thead><tbody id="postrows"></tbody></table></div>
     </div>
 
+    <div class="tab" id="t-comm" hidden>
+      <div class="cbox"><label style="display:flex;gap:8px;align-items:center"><input id="cm-on" type="checkbox" style="width:auto"> Community is open</label>
+        <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input id="cm-ap" type="checkbox" style="width:auto"> New posts need my approval first</label>
+        <label for="cm-blocked">Blocked words (separate with commas). Posts, comments and nicknames containing them are rejected.</label><textarea id="cm-blocked" rows="2"></textarea>
+        <div style="margin-top:10px"><button class="mini" data-a="c-save">Save community settings</button> <button class="mini bad" data-a="c-clean">Remove photos older than 6 months</button></div></div>
+      <h2 style="margin-top:22px">Waiting for approval</h2><div class="scroll"><table><thead><tr><th>From</th><th>Post</th><th></th></tr></thead><tbody id="cm-pend"></tbody></table></div>
+      <h2 style="margin-top:22px">Reports</h2><div class="scroll"><table><thead><tr><th>What</th><th>Reported by</th><th></th></tr></thead><tbody id="cm-reps"></tbody></table></div>
+      <h2 style="margin-top:22px">Post as Kopi Breyk</h2>
+      <div class="cbox"><textarea id="cm-sbody" rows="3" maxlength="800" placeholder="Announce something to the community…"></textarea>
+        <div style="margin-top:8px"><label class="mini">Photo<input type="file" accept="image/*" id="cm-sfile" hidden></label> <img id="cm-sprev" class="th" hidden style="display:inline-block;vertical-align:middle"> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input id="cm-spin" type="checkbox" style="width:auto"> Pin to the top</label></div>
+        <button class="mini" data-a="c-spost" style="margin-top:10px">Post</button></div>
+      <h2 style="margin-top:22px">Recent posts</h2><div class="scroll"><table><thead><tr><th>From</th><th>Post</th><th></th></tr></thead><tbody id="cm-recent"></tbody></table></div>
+      <h2 style="margin-top:22px">Members</h2><div class="scroll"><table><thead><tr><th>Nickname</th><th>Account</th><th>Posts</th><th></th></tr></thead><tbody id="cm-members"></tbody></table></div>
+    </div>
+
     <div class="tab" id="t-prz" hidden>
       <p class="small">Weight = how likely (bigger wins more). Daily limit = max wins per day (leave blank for unlimited). Keep Try Again unticked under “Real prize”.</p>
       <div class="scroll"><table><thead><tr><th>Name</th><th>Weight</th><th>Color</th><th>Real prize</th><th>On wheel</th><th>Daily limit</th><th>Value ₱</th><th></th></tr></thead><tbody id="przrows"></tbody></table></div>
@@ -103,15 +118,15 @@
 <div id="toast"></div>
 <script src="config.js"></script>
 <script>
-let pw = sessionStorage.getItem('kb_admin') || '', players = [], prz = [], sales = [], feedback = [], birthdays = [], menu = [], reservations = [], site = { texts: {}, images: [] }, posts = [], editPost = null, postPhoto = null;
+let pw = sessionStorage.getItem('kb_admin') || '', players = [], prz = [], sales = [], feedback = [], birthdays = [], menu = [], reservations = [], site = { texts: {}, images: [] }, posts = [], editPost = null, postPhoto = null, commData = { pending: [], reports: [], recent: [], members: [] }, staffPhoto = null;
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const A = (fn, a) => rpc(fn, { p_pw: pw, ...a });
 
 async function loadAll() {
-  const [l, r, p, sl, fb, bl, mn, rs, co, si, ps] = await Promise.all([A('admin_list'), A('admin_report'), A('admin_prizes'), A('admin_sales'), A('admin_feedback'), A('admin_birthdays'), rpc('get_menu'), A('admin_reservations'), A('admin_costs'), A('admin_site'), A('admin_posts')]);
+  const [l, r, p, sl, fb, bl, mn, rs, co, si, ps, cm] = await Promise.all([A('admin_list'), A('admin_report'), A('admin_prizes'), A('admin_sales'), A('admin_feedback'), A('admin_birthdays'), rpc('get_menu'), A('admin_reservations'), A('admin_costs'), A('admin_site'), A('admin_posts'), A('admin_community')]);
   if (l.error) return l;
   players = l.players; $('#code').value = l.code; prz = p.prizes; sales = sl.sales || []; feedback = fb.feedback || []; birthdays = bl.birthdays || []; menu = Array.isArray(mn) ? mn : []; reservations = rs.reservations || [];
-  site = si; posts = ps.posts || []; renderSite(); renderPosts();
+  site = si; posts = ps.posts || []; renderSite(); renderPosts(); commData = cm.error ? commData : cm; renderComm();
   const pe = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
   $('#costline').textContent = `Prize cost today ${pe(co.prize_today)}${+co.budget ? ' of ' + pe(co.budget) + ' budget' : ' (no daily cap set)'} · this month ${pe(co.prize_month)} · points discounts today ${pe(co.disc_today)}, this month ${pe(co.disc_month)} · referrals confirmed this month ${co.refs_month}`;
   $('#bud').value = co.budget; $('#rpts').value = co.ref_pts; $('#rfb').value = co.ref_bonus; $('#rmin').value = co.ref_min; $('#rcap').value = co.ref_cap; $('#mr').value = fb.min ?? 50; $('#fbsum').innerHTML = `<div><b>${fb.avg ?? '-'}</b>Average rating</div><div><b>${fb.count ?? 0}</b>Feedback received</div>`; $('#ppp').value = l.ppp; $('#wp').value = l.wp;
@@ -182,6 +197,7 @@ document.addEventListener('change', async e => {
   const id = e.target.id, f = e.target.files && e.target.files[0]; if (!f) return;
   if (id === 'hero-file') { const r = await A('admin_add_image', { p_slot: 'hero', p_photo: await shrinkTo(f, 1200, 675, .72), p_caption: '' }); toast(r.error || 'Main photo saved'); await loadAll(); }
   if (id === 'gal-file') { const r = await A('admin_add_image', { p_slot: 'gallery', p_photo: await shrinkTo(f, 800, 800, .72), p_caption: $('#gal-cap').value }); toast(r.error || 'Photo added'); $('#gal-cap').value = ''; await loadAll(); }
+  if (id === 'cm-sfile') { staffPhoto = await shrinkTo(f, 900, 600, .72); $('#cm-sprev').src = staffPhoto; $('#cm-sprev').hidden = false; }
   if (id === 'p-file') { postPhoto = await shrinkTo(f, 900, 600, .72); $('#p-prev').src = postPhoto; $('#p-prev').hidden = false; }
 });
 document.addEventListener('click', async e => {
@@ -193,6 +209,13 @@ document.addEventListener('click', async e => {
   if (a === 'season-save') { const r = await A('admin_save_site', { p_data: { theme: $('#season').value, theme_fx: $('#fx').checked ? '1' : '0' } }); toast(r.error || 'Theme saved'); await loadAll(); }
   if (a === 'fb-reply') { const f = feedback.find(z => z.id === b.dataset.id); const t = prompt('Reply to ' + f.username + '. They will see it in their Profile. Leave empty to remove your reply:', f.reply || ''); if (t === null) return;
     const r = await A('admin_reply_feedback', { p_id: b.dataset.id, p_text: t }); toast(r.error || 'Reply saved'); await loadAll(); }
+  if (a === 'c-save') { const r = await A('admin_save_site', { p_data: { community_on: $('#cm-on').checked ? '1' : '0', community_approval: $('#cm-ap').checked ? '1' : '0', blocked_words: $('#cm-blocked').value } }); toast(r.error || 'Community settings saved'); await loadAll(); }
+  if (a === 'c-clean') { if (!confirm('Remove photos from community posts older than 6 months? The text stays.')) return; const r = await A('admin_ccleanup'); toast(r.error || `Removed ${r.cleaned} photo(s)`); }
+  if (a === 'c-ok' || a === 'c-no' || a === 'c-hide') { await A('admin_cpost_status', { p_id: +b.dataset.id, p_status: a === 'c-ok' ? 'approved' : a === 'c-no' ? 'rejected' : 'hidden' }); await loadAll(); }
+  if (a === 'c-view') { const r = await A('admin_cphoto', { p_id: +b.dataset.id }); if (!r.photo) return toast('No photo'); const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;background:#000c;display:grid;place-items:center;z-index:20'; d.innerHTML = `<img src="${r.photo}" style="max-width:85%;max-height:85%;border-radius:14px">`; d.onclick = () => d.remove(); document.body.append(d); }
+  if (a === 'c-rhide' || a === 'c-rdis') { await A('admin_creport', { p_id: +b.dataset.id, p_action: a === 'c-rhide' ? 'hide' : 'dismiss' }); await loadAll(); }
+  if (a === 'c-mute') { await A('admin_cmute', { p_nick: b.dataset.nick, p_flag: b.dataset.m === '1' }); await loadAll(); }
+  if (a === 'c-spost') { const r = await A('admin_cstaff_post', { p_body: $('#cm-sbody').value, p_photo: staffPhoto, p_pinned: $('#cm-spin').checked }); if (r.error) return toast(r.error); toast('Posted'); $('#cm-sbody').value = ''; staffPhoto = null; $('#cm-sprev').hidden = true; await loadAll(); }
   if (a === 'post-new') fillPost(null);
   if (a === 'post-edit') fillPost(posts.find(p => p.id == b.dataset.id));
   if (a === 'post-save') { const sp = $('#p-spots').value;
@@ -201,6 +224,14 @@ document.addEventListener('click', async e => {
   if (a === 'post-del') { if (!confirm('Delete this post?')) return; await A('admin_delete_post', { p_id: +b.dataset.id }); await loadAll(); }
   if (a === 'post-att') { const r = await A('admin_attendees', { p_id: +b.dataset.id }); alert((r.people || []).map(x => x.name + (x.mobile ? ' (' + x.mobile + ')' : '')).join('\n') || 'Nobody yet.'); }
 });
+const renderComm = () => {
+  const c = commData; if (document.activeElement !== $('#cm-blocked')) $('#cm-blocked').value = c.blocked || ''; $('#cm-on').checked = c.on !== '0'; $('#cm-ap').checked = c.approval !== '0';
+  const n = (c.pending || []).length + (c.reports || []).length; document.querySelector('[data-t="comm"]').textContent = 'Community' + (n ? ` (${n})` : '');
+  $('#cm-pend').innerHTML = (c.pending || []).map(x => `<tr><td><b>${esc(x.nick)}</b><br><span class="small">${esc(x.t)}</span></td><td>${esc(x.body)}${x.has_photo ? `<br><button class="mini" data-a="c-view" data-id="${x.id}">View photo</button>` : ''}</td><td><button class="mini" data-a="c-ok" data-id="${x.id}">Approve</button><button class="mini bad" data-a="c-no" data-id="${x.id}">Reject</button></td></tr>`).join('') || '<tr><td colspan="3">Nothing waiting.</td></tr>';
+  $('#cm-reps').innerHTML = (c.reports || []).map(x => `<tr><td><span class="small">${esc(x.kind)} by ${esc(x.by)}</span><br>${esc(x.text)}${x.reason ? `<br><span class="small">Reason: ${esc(x.reason)}</span>` : ''}</td><td>${esc(x.reporter)}</td><td><button class="mini bad" data-a="c-rhide" data-id="${x.id}">Hide it</button><button class="mini" data-a="c-rdis" data-id="${x.id}">Dismiss</button></td></tr>`).join('') || '<tr><td colspan="3">No open reports.</td></tr>';
+  $('#cm-recent').innerHTML = (c.recent || []).map(x => `<tr><td>${esc(x.nick)}${x.pinned ? ' 📌' : ''}</td><td>${esc(x.body)}</td><td><button class="mini bad" data-a="c-hide" data-id="${x.id}">Hide</button></td></tr>`).join('') || '<tr><td colspan="3">No posts yet.</td></tr>';
+  $('#cm-members').innerHTML = (c.members || []).map(x => `<tr><td><b>${esc(x.nick)}</b>${x.muted ? ' <span class="chip">muted</span>' : ''}</td><td>${esc(x.username)}</td><td>${x.posts}</td><td><button class="mini${x.muted ? '' : ' bad'}" data-a="c-mute" data-nick="${esc(x.nick)}" data-m="${x.muted ? 0 : 1}">${x.muted ? 'Unmute' : 'Mute'}</button></td></tr>`).join('') || '<tr><td colspan="4">No members yet.</td></tr>';
+};
 const when = d => d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : 'In ' + d + ' days';
 const renderBirthdays = () => {
   $('#bdrows').innerHTML = birthdays.map(b => { const f = (b.full_name || b.username).split(' ')[0], msg = encodeURIComponent(`Happy birthday, ${f}! From all of us at Kopi Breyk. Your birthday bonus spin is waiting in the app.`);
