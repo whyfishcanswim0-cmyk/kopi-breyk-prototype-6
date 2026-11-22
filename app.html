@@ -1,42 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Kopi Breyk Menu</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4a0e1a">
+<title>Kopi Breyk Rewards</title>
 <link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <script>document.documentElement.dataset.theme=localStorage.getItem("kb_theme")||"";try{document.documentElement.dataset.season=JSON.parse(localStorage.getItem("kb_season")||"{}").theme||""}catch(e){}</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="wide">
-  <div class="brand"><span><img src="logo.png" alt="">Our menu</span><nav class="topnav"><a href="/">Home</a><a href="/app">Rewards</a></nav></div>
-  <div class="chips" id="chips"></div>
-  <div id="menu"><p class="small">Loading…</p></div>
+<main>
+  <div class="brand"><span><img src="logo.png" alt="">Kopi Breyk</span><button id="logout" hidden>Log out</button></div>
+
+  <section class="screen" id="s-load"><div class="skel" style="height:34px;width:60%"></div><div class="skel" style="height:230px;margin-top:18px"></div><div class="skel" style="height:90px;margin-top:16px"></div></section>
+
+  <section class="screen" id="s-auth" hidden>
+    <h1>Welcome to Kopi Breyk Rewards</h1>
+    <p>Earn points on every order, keep your streak, and spin for treats.</p>
+    <div class="tabs"><button class="on" data-mode="login">Log in</button><button data-mode="signup">Sign up</button></div>
+    <label for="u">Username</label>
+    <input id="u" autocomplete="username" autocapitalize="none" autocorrect="off" maxlength="20">
+    <label for="p">4-digit PIN</label>
+    <input id="p" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password">
+    <div id="su" hidden>
+      <label for="nm">Full name</label><input id="nm" autocomplete="name">
+      <label for="mb">Mobile number</label><input id="mb" type="tel" inputmode="tel" placeholder="09171234567" autocomplete="tel">
+      <label for="bd">Birthday</label><input id="bd" type="date">
+      <label for="em">Email (optional)</label><input id="em" type="email" autocomplete="email">
+      <label for="rf">Friend’s code (optional)</label><input id="rf" autocapitalize="characters" placeholder="Code from your friend’s My QR">
+      <label style="display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:.88rem;color:var(--mut)"><input id="cs" type="checkbox" style="margin-top:3px">I agree that Kopi Breyk may keep my details to run this rewards program and send me offers. I can ask to have them deleted anytime. <a href="/privacy" target="_blank" style="color:var(--gold)">Privacy notice</a></label>
+    </div>
+    <p class="err" id="auth-err"></p>
+    <button class="btn" id="auth-go">Log in</button>
+  </section>
+
+  <section class="screen" id="s-welcome" hidden>
+    <h2>Welcome, <span class="who"></span></h2>
+    <div class="card"><div class="pts" id="w-pts">20</div><p class="small">welcome points and 1 free spin are waiting for you</p></div>
+    <p>Ask the cashier for today’s Cafe Daily Code to claim your gift.</p>
+    <label for="code">Cafe Daily Code</label>
+    <input id="code" class="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off">
+    <p class="err" id="code-err"></p>
+    <button class="btn" id="code-go">Claim my gift</button>
+  </section>
+
+  <section class="screen" id="s-home" hidden>
+    <div class="pane" id="p-home">
+      <p class="bonus" id="promo" hidden style="margin-bottom:14px"></p>
+      <h2><span id="greet">Hello</span>, <span class="who"></span></h2>
+      <div class="free-box" id="ph-banner" hidden><b>Add your photo</b>Needed before you can use your points.<button class="btn" id="ph-open">Add photo</button></div>
+      <div class="card cupcard">
+        <svg id="cup" viewBox="0 0 120 130" aria-hidden="true"><defs><clipPath id="cupclip"><path d="M20 42h80l-8 58a14 14 0 0 1-14 12H42a14 14 0 0 1-14-12z"/></clipPath><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--gold)"/><stop offset="1" style="stop-color:#8c5a1f"/></linearGradient></defs>
+          <g clip-path="url(#cupclip)"><rect id="cup-fill" x="0" y="42" width="120" height="70" fill="url(#cg)" style="transform:scaleY(0)"/></g>
+          <path class="line" d="M20 42h80l-8 58a14 14 0 0 1-14 12H42a14 14 0 0 1-14-12z"/><path class="line" d="M100 52h6a12 12 0 0 1 0 28h-8"/><path class="line" d="M12 120h96"/>
+          <path class="steam" d="M45 32c-7-7 7-11 0-20"/><path class="steam s2" d="M60 32c-7-7 7-11 0-20"/><path class="steam s3" d="M75 32c-7-7 7-11 0-20"/></svg>
+        <div class="pts" id="pts">0</div><p class="small" style="margin-top:4px">points</p><p class="small" id="ptsval"></p></div>
+      <div class="row2" id="special" hidden><h2 style="font-size:1.3rem">Today’s special</h2><p class="small" id="special-t" style="margin:0 0 8px"></p><a class="mini" href="/menu" style="text-decoration:none;display:inline-block">View the menu ›</a></div>
+      <div class="free-box" id="pending" hidden><b>You have a prize to claim</b><span id="pend-name"></span><button class="btn" id="to-prize">View my prize</button></div>
+      <p class="bonus" id="bonus-note" hidden></p>
+      <div class="row2" id="home-spin" hidden style="margin-top:16px"><h2>You have <span id="spins2">0</span> free spin(s)</h2><button class="btn" id="to-wheel2">Spin the wheel</button></div>
+      <div class="row2"><h2 id="st-title2" style="font-size:1.4rem"></h2><p class="small" id="st-txt2" style="margin:0 0 8px"></p><button class="mini" data-tab="rewards">See my calendar ›</button></div>
+    </div>
+    <div class="pane" id="p-rewards" hidden>
+      <h2>Rewards</h2>
+      <div class="row2"><h2>Free spins: <span id="spins">0</span></h2><button class="btn" id="to-wheel">Spin the wheel</button></div>
+      <div class="card"><h2 id="st-title"></h2><p class="small" id="st-txt"></p><div class="cal" id="cal"></div></div>
+      <div class="row2"><h2 style="font-size:1.4rem">How you earn spins</h2><p class="small" style="margin:0">Order 3 days in a row for a free spin, then another for every 3 more days in a row. If you miss a day before finishing 3, your 5th visit earns a free spin instead. Your welcome gift and your birthday month have bonus spins too.</p></div>
+    </div>
+    <div class="pane" id="p-qr" hidden>
+      <h2>My member QR</h2>
+      <div class="mcard"><img src="logo.png" class="wm" alt=""><div class="mtop"><img id="avatar" class="avatar" hidden><div><div class="mname" id="mname"></div><div class="small" id="msince" style="margin:0"></div></div></div><div class="qrbox" id="qr"></div><p class="mcode" id="mcode"></p><p class="small" style="margin:0">Show this to the cashier before you pay.</p></div>
+    </div>
+    <div class="pane" id="p-explore" hidden>
+      <h2>Explore</h2>
+      <h2 style="font-size:1.5rem">What’s on</h2><div id="ev-list"></div>
+      <div class="row2"><h2 style="font-size:1.5rem">Our menu</h2><p class="small">Browse drinks and food with photos and prices.</p><a class="btn" href="/menu">View the menu</a></div>
+      <div class="card"><h2>Reserve with us</h2><p class="small">Request a lounge table, an event, or a private party. Our team will confirm.</p>
+        <label for="rs-kind">What are you booking?</label><select id="rs-kind"><option>Lounge table</option><option>Event</option><option>Private party</option></select>
+        <label for="rs-date">Date</label><input id="rs-date" type="date">
+        <label for="rs-time">Time</label><input id="rs-time" type="time">
+        <label for="rs-guests">Number of guests</label><input id="rs-guests" type="number" inputmode="numeric" min="1" max="200" value="2">
+        <label for="rs-notes">Notes (optional)</label><textarea id="rs-notes" rows="2" maxlength="500" placeholder="Occasion, special requests…"></textarea>
+        <button class="btn" id="rs-go">Request reservation</button></div>
+      <h2 style="font-size:1.5rem">My reservations</h2><div id="rs-list"></div>
+    </div>
+    <div class="pane" id="p-me" hidden>
+      <div style="text-align:center"><img id="pf-avatar" class="avatar" style="width:110px;height:110px" hidden><h2 id="pf-name"></h2><p class="small" id="pf-user"></p></div>
+      <details class="hist" open><summary>My recent orders</summary><div class="hl"></div></details>
+      <div class="card" id="refcard"><h2>Refer a friend</h2><p class="small" id="ref-info"></p>
+        <p class="small">Your code: <b id="ref-code" style="color:var(--gold);letter-spacing:.1em"></b></p>
+        <div id="ref-enter" hidden><label for="ref-in" style="text-align:left">Got a friend’s code?</label><input id="ref-in" autocapitalize="characters"><button class="btn" id="ref-go">Add friend’s code</button></div>
+        <p class="small" id="ref-status" style="margin-top:10px"></p></div>
+      <div class="card" id="fb" style="margin-top:20px"><h2>Tell us about your visit</h2>
+        <div id="fb-form"><div class="stars" id="stars"><button data-v="1">★</button><button data-v="2">★</button><button data-v="3">★</button><button data-v="4">★</button><button data-v="5">★</button></div>
+          <textarea id="fb-msg" rows="3" maxlength="1000" placeholder="Your feedback (optional)"></textarea>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:.85rem;color:var(--mut)"><input type="checkbox" id="fb-pub" style="margin-top:3px">You may show my feedback on the Kopi Breyk website (first name only).</label>
+          <button class="btn" id="fb-go">Send feedback</button><p class="small" style="margin-top:10px">Your feedback goes privately to our team.</p></div>
+        <p id="fb-done" hidden>Thank you! Your feedback helps us serve you better.</p>
+        <p class="small" id="g-wrap" style="margin-top:14px"><a id="g-link" target="_blank" rel="noopener">Share your experience on Google ›</a></p></div>
+      <div class="card" id="myfb" hidden style="text-align:left"><h2>Your feedback</h2><div id="myfb-list"></div></div>
+      <div class="row2"><h2 style="font-size:1.3rem">Appearance</h2><div class="tabs" id="theme-tabs"><button data-th="">Dark</button><button data-th="light">Light</button></div><button class="mini" id="snd">Sound: on</button> <button class="mini" id="tour-again">How it works</button></div>
+      <button class="btn ghost" id="logout2">Log out</button>
+      <p class="small" style="text-align:center;margin-top:18px"><a href="/privacy" target="_blank" style="color:var(--mut)">Privacy notice</a> · <a href="#" id="del-acc" style="color:var(--bad)">Delete my account</a></p>
+    </div>
+  </section>
+
+  <section class="screen" id="s-photo" hidden>
+    <button class="back" data-home id="ph-back">‹ Back</button>
+    <h2>Add your photo</h2>
+    <p>This helps our cashiers make sure your points go to the right person. Only our staff can see it. Once saved, it can only be changed by staff.</p>
+    <img id="ph-prev" class="avatar" style="width:180px;height:180px" hidden>
+    <label class="btn ghost" style="text-align:center;cursor:pointer">Take or choose a photo<input id="ph-file" type="file" accept="image/*" capture="user" hidden></label>
+    <p class="err" id="ph-err"></p>
+    <button class="btn" id="ph-save" hidden>Save my photo</button>
+  </section>
+
+  <section class="screen" id="s-wheel" hidden>
+    <button class="back" data-home>‹ Back</button>
+    <h2>Spin the wheel</h2>
+    <p>Free spins left: <b id="w-spins"></b></p>
+    <div class="stage"><div class="pointer"></div><canvas id="wheel" width="720" height="720"></canvas><div class="hub"></div></div>
+    <button class="btn" id="spin-go">Spin</button>
+  </section>
+
+  <section class="screen" id="s-prize" hidden>
+    <button class="back" data-home>‹ Back</button>
+    <div class="ticket">
+      <p id="pz-top"></p><div class="prize" id="pz-name"></div><p id="pz-sub"></p>
+      <div id="pz-live"><div class="clock"><b id="clk">--:--:--</b><span id="clk-date"></span><div class="live"></div></div>
+        <p class="small" style="margin-top:10px;color:#7a4a52">Cashier: check that the clock is ticking, then tap below.</p></div>
+      <div id="pz-done" hidden><div class="done">REDEEMED</div><p id="pz-done-at"></p></div>
+    </div>
+    <button class="btn" id="redeem-go">Mark as Redeemed</button>
+  </section>
 </main>
+<nav id="nav" hidden><i id="nav-ind"></i>
+  <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
+  <button data-tab="rewards"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M8 8a2.5 2.5 0 1 1 0-5c2.5 0 4 5 4 5s1.5-5 4-5a2.5 2.5 0 1 1 0 5"/></svg><span>Rewards</span></button>
+  <button data-tab="qr" class="qr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h3M21 17v4"/></svg><span>My QR</span></button>
+  <button data-tab="explore"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Explore</span></button>
+  <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></button>
+</nav>
+<canvas id="confetti" hidden></canvas>
+<div id="tour" hidden><div class="tbox"><div id="tour-body"></div><div class="tdots" id="tour-dots"></div><div class="row"><button class="btn ghost" id="tour-skip">Skip</button><button class="btn" id="tour-next">Next</button></div></div></div>
 <div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="config.js"></script>
 <script>
+let creds = JSON.parse(localStorage.getItem('kb_creds') || 'null');
+let minRedeem = 50, fbRating = 0, prizes = [], st = null, pv = null, rot = 0, spinning = false, mode = 'login', tick = null;
+const fmt = o => new Intl.DateTimeFormat('en-PH', { timeZone: 'Asia/Manila', ...o });
+const call = (fn, extra) => rpc(fn, { p_user: creds.u, p_pin: creds.p, ...extra });
+const show = id => { document.querySelectorAll('.screen').forEach(e => e.hidden = e.id !== id); $('#nav').hidden = id !== 's-home'; document.body.classList.toggle('has-nav', id === 's-home'); window.scrollTo(0, 0); };
+const all = (s, f) => document.querySelectorAll(s).forEach(f);
+const day = (s, n) => new Date(new Date(s + 'T00:00:00Z').getTime() + n * 864e5).toISOString().slice(0, 10);
+
+function logout() { localStorage.removeItem('kb_creds'); creds = null; clearInterval(tick); show('s-auth'); }
+$('#logout').onclick = logout;
+all('[data-home]', b => b.onclick = () => { clearInterval(tick); route(st); });
+
+// ---- sign up / log in ----
+all('.tabs button', b => b.onclick = () => {
+  mode = b.dataset.mode; all('.tabs button', x => x.classList.toggle('on', x === b));
+  $('#auth-go').textContent = mode === 'login' ? 'Log in' : 'Create account';
+  $('#auth-err').textContent = ''; $('#su').hidden = mode !== 'signup';
+});
+$('#auth-go').onclick = async () => {
+  const u = $('#u').value.trim(), p = $('#p').value; $('#auth-err').textContent = '';
+  if (!u || !/^\d{4}$/.test(p)) { $('#auth-err').textContent = 'Enter a username and a 4-digit PIN.'; return; }
+  const su = { p_user: u, p_pin: p, p_name: $('#nm').value, p_mobile: $('#mb').value, p_birthday: $('#bd').value || null, p_email: $('#em').value, p_consent: $('#cs').checked };
+  $('#auth-go').disabled = true;
+  const r = mode === 'login' ? await rpc('get_status', { p_user: u, p_pin: p }) : await rpc('signup', su);
+  $('#auth-go').disabled = false;
+  if (r.error) { $('#auth-err').textContent = r.error; return; }
+  creds = { u: r.username, p }; localStorage.setItem('kb_creds', JSON.stringify(creds)); $('#p').value = '';
+  if (mode === 'signup' && $('#rf').value.trim()) { const rr = await call('enter_referral', { p_code: $('#rf').value }); if (rr.error) toast(rr.error); }
+  route(r);
+};
+
+// ---- routing ----
+async function route(s) {
+  if (!creds) return show('s-auth');
+  if (!s) { s = await call('get_status'); if (s.error) { logout(); toast(s.error); return; } }
+  st = s; all('.who', e => e.textContent = (s.name || s.username).split(' ')[0]);
+  if (!s.welcomed && !s.has_photo) openPhoto(); else if (!s.welcomed) { $('#w-pts').textContent = s.welcome + ' points'; $('#code').value = ''; show('s-welcome'); } else { renderHome(); show('s-home'); }
+}
+$('#code-go').onclick = async () => {
+  const c = $('#code').value; $('#code-err').textContent = '';
+  if (!/^\d{4}$/.test(c)) { $('#code-err').textContent = 'The code is 4 digits.'; return; }
+  $('#code-go').disabled = true; const r = await call('claim_welcome', { p_code: c }); $('#code-go').disabled = false;
+  if (r.error) { $('#code-err').textContent = r.error; return; }
+  toast('Welcome gift added!'); route(r);
+};
+
+// ---- look & feel ----
+const hr = () => +new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Manila', hour: '2-digit', hour12: false }).format(new Date());
+const greeting = () => { const h = hr(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; };
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const empty = t => `<div class="empty"><svg viewBox="0 0 24 24"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 3v2M11 3v2M14 3v2"/></svg><p>${t}</p></div>`;
+let lastPts = 0;
+function countUp(el, to) {
+  const from = lastPts; lastPts = to; if (from === to || reduced()) { el.textContent = to; return; }
+  const t0 = performance.now(), step = t => { const p = Math.min((t - t0) / 900, 1); el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+}
+function renderCup() { const ratio = Math.min(st.points / minRedeem, 1); $('#cup-fill').style.transform = `scaleY(${ratio})`; $('#cup').classList.toggle('full', ratio >= 1); }
+let menuCache = null;
+async function loadSpecial() {
+  if (!menuCache) { const m = await rpc('get_menu'); menuCache = Array.isArray(m) ? m : []; }
+  const sp = menuCache.flatMap(c => c.items).filter(i => i.special && i.available);
+  $('#special').hidden = !sp.length; if (sp.length) $('#special-t').textContent = sp.map(i => `${i.name} · ₱${i.price}`).join('   ');
+}
+function confetti() {
+  if (reduced()) return; const c = $('#confetti'), x = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight; c.hidden = false;
+  const cols = ['#d4af5f', '#f6ecd8', '#a33a4d', '#f2d27a'];
+  const P = [...Array(130)].map(() => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * .5, w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, vx: -1.5 + Math.random() * 3, vy: 2 + Math.random() * 4, r: Math.random() * 6, vr: -.2 + Math.random() * .4, c: cols[Math.floor(Math.random() * cols.length)] }));
+  const t0 = performance.now();
+  (function f(t) { x.clearRect(0, 0, c.width, c.height); P.forEach(p => { p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); x.restore(); });
+    if (t - t0 < 2600) requestAnimationFrame(f); else { x.clearRect(0, 0, c.width, c.height); c.hidden = true; } })(t0);
+}
+let snd = localStorage.getItem('kb_snd') !== '0', actx = null;
+const sndLabel = () => $('#snd').textContent = 'Sound: ' + (snd ? 'on' : 'off');
+$('#snd').onclick = () => { snd = !snd; localStorage.setItem('kb_snd', snd ? '1' : '0'); sndLabel(); }; sndLabel();
+function tickSound() {
+  if (!snd) return; if (navigator.vibrate) navigator.vibrate(8);
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 1500;
+    g.gain.setValueAtTime(.06, actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + .05); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + .05); } catch (e) {}
+}
+function scheduleTicks(total) { for (let k = 1; k <= total; k++) setTimeout(tickSound, 5200 * (1 - Math.pow(1 - k / total, 1 / 3.5))); }
+function applyTheme(t) { document.documentElement.dataset.theme = t; localStorage.setItem('kb_theme', t); all('#theme-tabs button', b => b.classList.toggle('on', b.dataset.th === t)); }
+all('#theme-tabs button', b => b.onclick = () => applyTheme(b.dataset.th)); applyTheme(localStorage.getItem('kb_theme') || '');
+const TOUR = [['Earn points', 'Every ₱100 you spend earns 1 point. Once you have 50 points, you can use them to lower your bill.'], ['Keep your streak', 'Order 3 days in a row for a free spin. If you miss a day, your 5th visit earns one instead.'], ['Show your QR', 'Open My QR before you pay so the cashier can add your points. Then spin the wheel for treats.']];
+let ti = 0;
+function drawTour() { $('#tour-body').innerHTML = `<h2>${TOUR[ti][0]}</h2><p>${TOUR[ti][1]}</p>`; $('#tour-dots').innerHTML = TOUR.map((_, i) => `<i class="${i === ti ? 'on' : ''}"></i>`).join(''); $('#tour-next').textContent = ti === TOUR.length - 1 ? 'Got it' : 'Next'; }
+function openTour() { ti = 0; drawTour(); $('#tour').hidden = false; }
+function closeTour() { $('#tour').hidden = true; if (creds) localStorage.setItem('kb_tour_' + creds.u, '1'); }
+$('#tour-next').onclick = () => { if (ti < TOUR.length - 1) { ti++; drawTour(); } else closeTour(); };
+$('#tour-skip').onclick = closeTour; $('#tour-again').onclick = openTour;
+
+// ---- bottom navigation ----
+let tab = localStorage.getItem('kb_tab') || 'home';
+function setTab(t, user) {
+  tab = ['home', 'rewards', 'qr', 'explore', 'me'].includes(t) ? t : 'home'; localStorage.setItem('kb_tab', tab);
+  all('.pane', p => p.hidden = p.id !== 'p-' + tab); all('#nav button', b => b.classList.toggle('on', b.dataset.tab === tab));
+  $('#nav-ind').style.transform = 'translateX(' + ['home', 'rewards', 'qr', 'explore', 'me'].indexOf(tab) * 100 + '%)';
+  if (tab === 'explore') { loadRes(); loadEvents(); }
+  if (tab === 'me') { loadRef(); loadFb(); }
+  if (user) window.scrollTo(0, 0);
+}
+all('[data-tab]', b => b.onclick = () => setTab(b.dataset.tab, true));
+$('#to-wheel2').onclick = () => $('#to-wheel').click();
+$('#logout2').onclick = logout;
+
+// ---- replies to my feedback ----
+async function loadFb() {
+  if (!st) return; const r = await call('my_feedback'); if (r.error || !r.items) return;
+  const dot = $('#nav button[data-tab="me"]'), onMe = tab === 'me' && !$('#s-home').hidden;
+  $('#myfb').hidden = !r.items.length;
+  $('#myfb-list').innerHTML = r.items.map(x => `<div style="border-bottom:1px solid var(--line);padding:10px 0"><div style="color:var(--gold)">${'★'.repeat(x.rating)}${'☆'.repeat(5 - x.rating)} <span class="small">${esc(x.t)}</span></div>${x.message ? `<p style="margin:4px 0;color:var(--ink);text-align:left">${esc(x.message)}</p>` : ''}${x.reply ? `<div class="reply"><b>Kopi Breyk replied</b><p style="margin:2px 0 0;text-align:left;color:var(--ink)">${esc(x.reply)}</p></div>` : ''}</div>`).join('');
+  if (onMe && r.unseen > 0) { await call('mark_replies_seen'); dot.classList.remove('dot'); } else dot.classList.toggle('dot', r.unseen > 0);
+}
+
+// ---- refer a friend ----
+async function loadRef() {
+  if (!st) return; const r = await call('my_referral'); if (r.error) return;
+  $('#ref-code').textContent = st.member_code;
+  $('#ref-info').textContent = `Share your code. When a friend adds it and our cashier confirms their order, you earn ${r.reward} points.`;
+  $('#ref-enter').hidden = !r.can_enter;
+  $('#ref-status').textContent = [r.referred_by ? `You were referred by ${r.referred_by} (${r.status}).` : '', `Friends confirmed: ${r.confirmed}${r.pending ? ' · waiting for the cashier: ' + r.pending : ''}`].filter(Boolean).join(' ');
+}
+$('#ref-go').onclick = async () => {
+  const v = $('#ref-in').value.trim(); if (!v) return; const r = await call('enter_referral', { p_code: v });
+  if (r.error) { toast(r.error); return; } toast('Code added! Show your QR at the counter on your next order.'); $('#ref-in').value = ''; loadRef();
+};
+
+// ---- events + promo banner + delete account ----
+rpc('get_banner').then(b => { if (b && b.text) { $('#promo').textContent = b.text; $('#promo').hidden = false; } });
+async function loadEvents() {
+  const [ps, mine] = await Promise.all([rpc('get_posts'), call('my_rsvps')]); if (!Array.isArray(ps)) return;
+  const going = new Set(Array.isArray(mine) ? mine : []);
+  $('#ev-list').innerHTML = ps.map(p => `<div class="post">${p.has_photo ? `<img data-pid="${p.id}" src="logo.png" class="ph" alt="">` : ''}<b>${esc(p.title)}</b>${p.kind === 'event' ? `<p class="small" style="margin:2px 0">${esc(p.dlabel)} · ${esc(p.event_time)} · ${p.going}${p.spots ? '/' + p.spots : ''} going</p>` : ''}${p.body ? `<p style="margin:6px 0;white-space:pre-line">${esc(p.body)}</p>` : ''}${p.kind === 'event' ? `<button class="mini" data-rsvp="${p.id}" data-on="${going.has(p.id) ? 1 : 0}">${going.has(p.id) ? 'Going ✓ (tap to cancel)' : p.spots && p.going >= p.spots ? 'Full' : 'I’m going'}</button>` : ''}</div>`).join('') || empty('Nothing new right now. Check back soon!');
+  document.querySelectorAll('#ev-list img[data-pid]').forEach(async im => { const r = await rpc('get_post_photo', { p_id: +im.dataset.pid }); if (r.photo) { im.src = r.photo; im.classList.remove('ph'); } });
+}
+document.addEventListener('click', async e => {
+  const id = e.target.dataset && e.target.dataset.rsvp; if (!id) return;
+  const r = await call('rsvp', { p_post: +id, p_going: e.target.dataset.on === '0' }); if (r.error) toast(r.error); loadEvents();
+});
+$('#del-acc').onclick = async e => {
+  e.preventDefault();
+  if (prompt('This permanently deletes your account, your details and photo, and your points. Type DELETE to confirm.') !== 'DELETE') return;
+  const r = await call('delete_account'); if (r.error) { toast(r.error); return; }
+  localStorage.removeItem('kb_creds'); localStorage.removeItem('kb_tab'); creds = null; toast('Your account was deleted.'); show('s-auth');
+};
+
+// ---- explore: reservations ----
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const peso = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
-const ic = { Vegan: '🌿', Spicy: '🌶️', New: '✨', Bestseller: '⭐' };
-const row = i => `<div class="mc${i.available ? '' : ' so'}"><img class="ph" data-pid="${i.has_photo ? i.id : ''}" src="logo.png" alt=""><div class="mb"><b>${esc(i.name)}</b>${(i.tags || []).length ? `<div class="tags">${i.tags.map(t => `<span>${ic[t] || ''} ${esc(t)}</span>`).join('')}</div>` : ''}${i.description ? `<p class="d">${esc(i.description)}</p>` : ''}<div class="mpr">${i.available ? peso(i.price) : '<span class="soldout">Sold out</span>'}</div></div></div>`;
-const grid = items => `<div class="mgrid">${items.map(row).join('')}</div>`;
-(async () => {
-  const m = await rpc('get_menu');
-  if (m.error) { document.querySelector('#menu').innerHTML = '<p class="err">' + esc(m.error) + '</p>'; return; }
-  const cats = m.filter(c => c.items.length);
-  if (!cats.length) { document.querySelector('#menu').innerHTML = '<p>Our menu is coming soon.</p>'; return; }
-  const sp = cats.flatMap(c => c.items).filter(i => i.special && i.available);
-  document.querySelector('#chips').innerHTML = (sp.length ? '<a href="#special">Today’s special</a>' : '') + cats.map(c => `<a href="#c${c.id}">${esc(c.name)}</a>`).join('');
-  document.querySelector('#menu').innerHTML = (sp.length ? '<h2 id="special" class="mh">Today’s special</h2>' + grid(sp) : '') + cats.map(c => `<h2 id="c${c.id}" class="mh">${esc(c.name)}</h2>` + grid(c.items)).join('');
-  document.querySelectorAll('img[data-pid]').forEach(async im => {
-    if (!im.dataset.pid) return; const r = await rpc('get_menu_photo', { p_id: +im.dataset.pid });
-    if (r.photo) { document.querySelectorAll(`img[data-pid="${im.dataset.pid}"]`).forEach(x => { x.src = r.photo; x.classList.remove('ph'); }); }
+async function loadRes() {
+  if (!st) return; $('#rs-date').min = st.today;
+  const r = await call('my_reservations'); if (r.error) return;
+  $('#rs-list').innerHTML = r.map(x => `<div class="hrow" style="align-items:center"><span>${esc(x.kind)}<br><span class="small">${esc(x.dlabel)} · ${esc(x.res_time)} · ${x.guests} guest${x.guests === 1 ? '' : 's'}</span></span><span style="text-align:right">${esc(x.status)}${['pending', 'confirmed'].includes(x.status) ? `<br><button class="mini" data-cancel="${x.id}">Cancel</button>` : ''}${x.admin_note ? `<br><span class="small">${esc(x.admin_note)}</span>` : ''}</span></div>`).join('') || empty('No reservations yet. Plan something with us!');
+}
+$('#rs-go').onclick = async () => {
+  const d = $('#rs-date').value, t = $('#rs-time').value, g = +$('#rs-guests').value;
+  if (!d || !t || !g) { toast('Please fill in the date, time and guests.'); return; }
+  $('#rs-go').disabled = true; const r = await call('reserve', { p_kind: $('#rs-kind').value, p_date: d, p_time: t, p_guests: g, p_notes: $('#rs-notes').value }); $('#rs-go').disabled = false;
+  if (r.error) { toast(r.error); return; }
+  toast('Request sent! We’ll confirm soon.'); $('#rs-notes').value = ''; loadRes();
+};
+document.addEventListener('click', async e => {
+  const id = e.target.dataset && e.target.dataset.cancel; if (!id || !confirm('Cancel this reservation?')) return;
+  await call('cancel_reservation', { p_id: id }); loadRes();
+});
+
+// ---- photo + member QR ----
+let myPhoto = null, qrFor = '', phData = '';
+function openPhoto() { $('#ph-back').hidden = !st.welcomed; $('#ph-prev').hidden = true; $('#ph-save').hidden = true; $('#ph-err').textContent = ''; show('s-photo'); }
+$('#ph-open').onclick = openPhoto;
+const shrink = f => new Promise(res => { const im = new Image(); im.onload = () => { const s = Math.min(im.width, im.height), c = document.createElement('canvas'); c.width = c.height = 360;
+  c.getContext('2d').drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, 360, 360); URL.revokeObjectURL(im.src); res(c.toDataURL('image/jpeg', .75)); }; im.src = URL.createObjectURL(f); });
+$('#ph-file').onchange = async e => { const f = e.target.files[0]; if (!f) return; phData = await shrink(f); $('#ph-prev').src = phData; $('#ph-prev').hidden = false; $('#ph-save').hidden = false; };
+$('#ph-save').onclick = async () => {
+  $('#ph-save').disabled = true; const r = await call('set_photo', { p_photo: phData }); $('#ph-save').disabled = false;
+  if (r.error) { $('#ph-err').textContent = r.error; return; }
+  myPhoto = phData; toast('Photo saved'); route(r);
+};
+async function renderMember() {
+  if (typeof QRCode !== 'undefined' && qrFor !== st.member_code) { qrFor = st.member_code; $('#qr').innerHTML = ''; new QRCode($('#qr'), { text: 'KB:' + st.member_code, width: 176, height: 176, colorDark: '#3a0a14', colorLight: '#f6ecd8' }); }
+  $('#mcode').textContent = st.member_code;
+  if (st.has_photo && !myPhoto) { const r = await call('get_photo'); if (r.photo) myPhoto = r.photo; }
+  if (myPhoto) { $('#avatar').src = myPhoto; $('#avatar').hidden = false; $('#pf-avatar').src = myPhoto; $('#pf-avatar').hidden = false; }
+}
+
+// ---- home ----
+function streakInfo() {
+  const s = st, last = s.last_visit, alive = last === s.today || last === day(s.today, -1);
+  if (s.mode === 'attendance') { const k = Math.max(0, 5 - s.cycle); return ['Attendance', `${s.cycle} of 5 visits. ${k} more visit${k === 1 ? '' : 's'} for a free spin.`]; }
+  if (!last || (s.streak === 0 && s.cycle === 0)) return ['Start a streak', 'Order today to begin. 3 days in a row earns a free spin.'];
+  if (alive) { const k = 3 - (s.streak % 3); return [`${s.streak}-day streak`, last === s.today ? `Come back tomorrow! ${k} more day${k > 1 ? 's' : ''} in a row for a free spin.` : 'Order today to keep your streak alive!']; }
+  if (s.done) return ['Start a streak', 'Your streak ended. Order today to start a new one.'];
+  return ['Attendance', `You missed a day, so your 5th visit now earns a free spin. ${s.cycle} visit${s.cycle === 1 ? '' : 's'} so far.`];
+}
+function renderHome() {
+  countUp($('#pts'), st.points); renderCup(); loadFb(); $('#greet').textContent = greeting(); loadSpecial();
+  $('#mname').textContent = st.name || st.username; $('#msince').textContent = st.since ? 'Member since ' + st.since : '';
+  if (st.days.includes(st.today)) setTimeout(() => sessionStorage.setItem('kb_stamp_' + st.today, '1'), 1500);
+  if (!localStorage.getItem('kb_tour_' + creds.u) && $('#tour').hidden) openTour();
+  $('#ptsval').textContent = st.points < minRedeem ? `Reach ${minRedeem} points to start using them on your bill.` : `Worth ₱${(st.points * st.peso).toLocaleString('en-PH')} off your bill. Minimum ${minRedeem} points per redemption. Tell the cashier how many to use.`;
+  $('#spins').textContent = st.spins; $('#spins2').textContent = st.spins; $('#home-spin').hidden = st.spins < 1; $('#to-wheel').disabled = st.spins < 1;
+  $('#bonus-note').hidden = !st.birthday; $('#bonus-note').textContent = st.spins > 0 ? 'Happy birthday! Your next spin is a guaranteed prize.' : 'Happy birthday month! Your next free spin will be a guaranteed prize.';
+  $('#ph-banner').hidden = st.has_photo; renderMember();
+  $('#pf-name').textContent = st.name || st.username; $('#pf-user').textContent = '@' + st.username; setTab(tab);
+  $('#pending').hidden = !st.pending; if (st.pending) $('#pend-name').textContent = st.pending.prize;
+  const [t, x] = streakInfo(); ['#st-title', '#st-title2'].forEach(q => $(q).textContent = t); ['#st-txt', '#st-txt2'].forEach(q => $(q).textContent = x);
+  const first = day(st.today, -27), pad = new Date(first + 'T00:00:00Z').getUTCDay(), on = new Set(st.days), stampNow = st.days.includes(st.today) && !sessionStorage.getItem('kb_stamp_' + st.today);
+  $('#cal').innerHTML = [...'SMTWTFS'].map(c => `<div class="h">${c}</div>`).join('') + '<div class="e"></div>'.repeat(pad) +
+    [...Array(28)].map((_, i) => { const d = day(first, i); return `<div class="${on.has(d) ? 'on' : ''} ${d === st.today ? 't' : ''}${d === st.today && stampNow ? ' stamp' : ''}">${+d.slice(8)}</div>`; }).join('');
+  all('.hl', e => e.innerHTML = st.history.map(h => `<div class="hrow"><span>${h.d}</span><span>₱${h.amount} · +${h.earned} pts${h.used ? ' · −' + h.used + ' used' : ''}</span></div>`).join('') || empty('No orders yet. Your first cup is waiting.'));
+}
+$('#to-prize').onclick = () => { pv = { prize: st.pending.prize, is_win: true }; showPrize(); };
+
+// ---- feedback + Google link ----
+const GURL = typeof GOOGLE_REVIEW_URL === 'string' && /^https?:\/\//.test(GOOGLE_REVIEW_URL) ? GOOGLE_REVIEW_URL : '';
+if (GURL) $('#g-link').href = GURL; else $('#g-wrap').hidden = true;
+all('#stars button', b => b.onclick = () => { fbRating = +b.dataset.v; all('#stars button', x => x.classList.toggle('on', +x.dataset.v <= fbRating)); });
+$('#fb-go').onclick = async () => {
+  if (!fbRating) { toast('Please tap a star rating first.'); return; }
+  $('#fb-go').disabled = true; const r = await call('submit_feedback', { p_rating: fbRating, p_msg: $('#fb-msg').value, p_public: $('#fb-pub').checked }); $('#fb-go').disabled = false;
+  if (r.error) { toast(r.error); return; }
+  $('#fb-form').hidden = true; $('#fb-done').hidden = false;
+};
+
+// ---- wheel ----
+$('#to-wheel').onclick = async () => { await loadWheel(); $('#w-spins').textContent = st.spins; show('s-wheel'); };
+async function loadWheel() {
+  if (!prizes.length) { const r = await rpc('get_prizes'); if (r.error) { toast(r.error); return; } prizes = r; }
+  drawWheel();
+}
+function inkFor(hex) { const n = parseInt(hex.slice(1), 16), l = .299 * (n >> 16) + .587 * (n >> 8 & 255) + .114 * (n & 255); return l > 140 ? '#3a0a14' : '#f6ecd8'; }
+function drawWheel() {
+  const c = $('#wheel'), x = c.getContext('2d'), S = c.width, R = S / 2, n = prizes.length, seg = 2 * Math.PI / n;
+  x.clearRect(0, 0, S, S);
+  prizes.forEach((p, i) => {
+    const a = -Math.PI / 2 + i * seg;
+    x.beginPath(); x.moveTo(R, R); x.arc(R, R, R - 4, a, a + seg); x.closePath();
+    x.fillStyle = p.color; x.fill(); x.strokeStyle = '#3a0a14'; x.lineWidth = 4; x.stroke();
+    x.save(); x.translate(R, R); x.rotate(a + seg / 2);
+    x.textAlign = 'right'; x.fillStyle = inkFor(p.color); x.font = '700 50px "Cormorant Garamond", Georgia, serif';
+    x.fillText(p.label, R - 46, 16); x.restore();
   });
-})();
+}
+$('#spin-go').onclick = async () => {
+  if (spinning) return; spinning = true; $('#spin-go').disabled = true; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch (e) {}
+  const r = await call('spin');
+  if (r.error) { toast(r.error); spinning = false; $('#spin-go').disabled = false; return; }
+  const i = prizes.findIndex(p => p.id === r.prize_id), seg = 360 / prizes.length;
+  const target = -(i + .5) * seg + (Math.random() - .5) * seg * .6;
+  const cur = ((rot % 360) + 360) % 360, delta = (((target - cur) % 360) + 360) % 360;
+  rot += 360 * 6 + delta; scheduleTicks(Math.round((360 * 6 + delta) / seg)); $('#wheel').style.transform = `rotate(${rot}deg)`;
+  setTimeout(() => { spinning = false; $('#spin-go').disabled = false; st = r; pv = r.result; showPrize(); if (pv.is_win) confetti(); }, 5400);
+};
+
+// ---- prize + live clock ----
+function showPrize() {
+  show('s-prize'); clearInterval(tick); $('#pz-name').textContent = pv.prize;
+  if (!pv.is_win) {
+    $('#pz-top').textContent = 'Not this time'; $('#pz-sub').textContent = 'Better luck on your next spin!';
+    $('#pz-live').hidden = true; $('#pz-done').hidden = true; $('#redeem-go').hidden = true; return;
+  }
+  $('#pz-top').textContent = 'You won'; $('#redeem-go').hidden = !!pv.redeemed;
+  if (pv.redeemed) {
+    $('#pz-sub').textContent = st.username; $('#pz-live').hidden = true; $('#pz-done').hidden = false;
+    $('#pz-done-at').textContent = 'Claimed ' + fmt({ dateStyle: 'medium', timeStyle: 'medium' }).format(pv.at); return;
+  }
+  $('#pz-sub').textContent = `Show this screen to the cashier, ${st.username}.`; $('#pz-live').hidden = false; $('#pz-done').hidden = true;
+  const upd = () => { const d = new Date();
+    $('#clk').textContent = fmt({ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(d);
+    $('#clk-date').textContent = fmt({ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(d); };
+  upd(); tick = setInterval(upd, 1000);
+}
+$('#redeem-go').onclick = async () => {
+  const c = prompt('Cashier only: enter the cashier PIN to mark this prize as redeemed. This can’t be undone.'); if (!c) return;
+  const r = await call('redeem', { p_cashier: c });
+  if (r.error) { toast(r.error); return; }
+  st = r; pv.redeemed = true; pv.at = new Date(); showPrize();
+};
+
+rpc('get_config').then(c => { if (c && c.min_redeem) { minRedeem = c.min_redeem; if (st && st.welcomed) renderHome(); } });
+route();
 </script>
 </body>
 </html>
