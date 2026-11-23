@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Community guidelines | Kopi Breyk</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4a0e1a">
+<link rel="icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("kb_theme")||"";try{document.documentElement.dataset.season=JSON.parse(localStorage.getItem("kb_season")||"{}").theme||""}catch(e){}</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <div class="brand"><span><img src="logo.png" alt="">Kopi Breyk</span><nav class="topnav"><a href="/menu">Menu</a><a href="/events">Events</a><a href="/app">Join</a></nav></div>
+  <h2>Community guidelines</h2>
+  <p class="small">Last updated: November 22, 2026</p>
+  <div class="legal">
+  <h3>Be kind</h3><p>Treat everyone the way you would at the cafe. No insults, bullying, hate, threats, or harassment.</p>
+  <h3>Respect privacy</h3><p>Don’t post anyone’s photo, name, number, or personal details without their permission. Don’t share your own private information either.</p>
+  <h3>Keep it appropriate</h3><p>No adult, violent, or illegal content, no spam or advertising, and no pretending to be staff or another person.</p>
+  <h3>Photos</h3><p>Photo posts are for members aged 18 and up. Post only photos you took or have permission to share.</p>
+  <h3>How we moderate</h3><p>Posts may be reviewed before they appear. Anyone can report a post or comment, and our team can remove content and turn off posting for members who break these rules.</p>
+  <h3>Questions or problems</h3><p id="contact">Please ask any of our staff.</p>
+  </div></div>
+</main>
+<div id="toast"></div>
+<script src="config.js"></script>
+<script>
+rpc('get_site').then(s => { const t = (s && s.texts) || {}, c = [t.email, t.phone].filter(Boolean).join(' · '); if (c) document.querySelector('#contact').textContent = c; });
+</script>
+</body>
+</html>
