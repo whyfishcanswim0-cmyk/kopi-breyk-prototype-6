@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4a0e1a">
-<title>Kopi Breyk Rewards</title>
+<title>Kopi Breyk</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
@@ -18,8 +18,8 @@
   <section class="screen" id="s-load"><div class="skel" style="height:34px;width:60%"></div><div class="skel" style="height:230px;margin-top:18px"></div><div class="skel" style="height:90px;margin-top:16px"></div></section>
 
   <section class="screen" id="s-auth" hidden>
-    <h1>Welcome to Kopi Breyk Rewards</h1>
-    <p>Earn points on every order, keep your streak, and spin for treats.</p>
+    <h1>Join Kopi Breyk</h1>
+    <p>Rewards, menu and reservations, and our community, all in one place.</p>
     <div class="tabs"><button class="on" data-mode="login">Log in</button><button data-mode="signup">Sign up</button></div>
     <label for="u">Username</label>
     <input id="u" autocomplete="username" autocapitalize="none" autocorrect="off" maxlength="20">
@@ -51,6 +51,16 @@
     <div class="pane" id="p-home">
       <p class="bonus" id="promo" hidden style="margin-bottom:14px"></p>
       <h2><span id="greet">Hello</span>, <span class="who"></span></h2>
+      <div class="row2" id="special" hidden><h2 style="font-size:1.3rem">Today’s special</h2><p class="small" id="special-t" style="margin:0 0 8px"></p><a class="mini" href="/menu" style="text-decoration:none;display:inline-block">View the menu ›</a></div>
+      <div class="tiles">
+        <a class="tile" href="/menu"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11"/></svg><b>Our menu</b><span>Drinks and food, with photos and prices</span></a>
+        <button class="tile" data-go="reserve"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b>Reservations</b><span>Book a table, an event, or a party</span></button>
+        <button class="tile" data-go="events"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><b>What’s on</b><span>Events and announcements</span></button>
+        <button class="tile" data-go="visit"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><b>Visit us</b><span>Hours, address and contact</span></button>
+      </div>
+    </div>
+    <div class="pane" id="p-rewards" hidden>
+      <h2>Rewards</h2>
       <div class="free-box" id="ph-banner" hidden><b>Add your photo</b>Needed before you can use your points.<button class="btn" id="ph-open">Add photo</button></div>
       <div class="card cupcard">
         <svg id="cup" viewBox="0 0 120 130" aria-hidden="true"><defs><clipPath id="cupclip"><path d="M20 42h80l-8 58a14 14 0 0 1-14 12H42a14 14 0 0 1-14-12z"/></clipPath><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--gold)"/><stop offset="1" style="stop-color:#8c5a1f"/></linearGradient></defs>
@@ -58,16 +68,9 @@
           <path class="line" d="M20 42h80l-8 58a14 14 0 0 1-14 12H42a14 14 0 0 1-14-12z"/><path class="line" d="M100 52h6a12 12 0 0 1 0 28h-8"/><path class="line" d="M12 120h96"/>
           <path class="steam" d="M45 32c-7-7 7-11 0-20"/><path class="steam s2" d="M60 32c-7-7 7-11 0-20"/><path class="steam s3" d="M75 32c-7-7 7-11 0-20"/></svg>
         <div class="pts" id="pts">0</div><p class="small" style="margin-top:4px">points</p><p class="small" id="ptsval"></p></div>
-      <div class="row2" id="special" hidden><h2 style="font-size:1.3rem">Today’s special</h2><p class="small" id="special-t" style="margin:0 0 8px"></p><a class="mini" href="/menu" style="text-decoration:none;display:inline-block">View the menu ›</a></div>
       <div class="free-box" id="pending" hidden><b>You have a prize to claim</b><span id="pend-name"></span><button class="btn" id="to-prize">View my prize</button></div>
       <p class="bonus" id="bonus-note" hidden></p>
-      <div class="row2" id="home-spin" hidden style="margin-top:16px"><h2>You have <span id="spins2">0</span> free spin(s)</h2><button class="btn" id="to-wheel2">Spin the wheel</button></div>
-      <div class="row2"><h2 id="st-title2" style="font-size:1.4rem"></h2><p class="small" id="st-txt2" style="margin:0 0 8px"></p><button class="mini" data-tab="rewards">See my calendar ›</button></div>
-      <div class="row2"><h2 style="font-size:1.3rem">Kopi Breyk community</h2><p class="small" style="margin:0 0 8px">Share moments and chat with other regulars.</p><button class="mini" id="open-comm2">Open the community ›</button></div>
-    </div>
-    <div class="pane" id="p-rewards" hidden>
-      <h2>Rewards</h2>
-      <div class="row2"><h2>Free spins: <span id="spins">0</span></h2><button class="btn" id="to-wheel">Spin the wheel</button></div>
+      <div class="row2" style="margin-top:16px"><h2>Free spins: <span id="spins">0</span></h2><button class="btn" id="to-wheel">Spin the wheel</button></div>
       <div class="card"><h2 id="st-title"></h2><p class="small" id="st-txt"></p><div class="cal" id="cal"></div></div>
       <div class="row2"><h2 style="font-size:1.4rem">How you earn spins</h2><p class="small" style="margin:0">Order 3 days in a row for a free spin, then another for every 3 more days in a row. If you miss a day before finishing 3, your 5th visit earns a free spin instead. Your welcome gift and your birthday month have bonus spins too.</p></div>
     </div>
@@ -75,55 +78,9 @@
       <h2>My member QR</h2>
       <div class="mcard"><img src="logo.png" class="wm" alt=""><div class="mtop"><img id="avatar" class="avatar" hidden><div><div class="mname" id="mname"></div><div class="small" id="msince" style="margin:0"></div></div></div><div class="qrbox" id="qr"></div><p class="mcode" id="mcode"></p><p class="small" style="margin:0">Show this to the cashier before you pay.</p></div>
     </div>
-    <div class="pane" id="p-explore" hidden>
-      <h2>Explore</h2>
-      <div class="row2"><h2 style="font-size:1.5rem">Community</h2><p class="small">Meet other Kopi Breyk regulars, share photos, and join the conversation.</p><button class="btn" id="open-comm">Open the community</button></div>
-      <h2 style="font-size:1.5rem">What’s on</h2><div id="ev-list"></div>
-      <div class="row2"><h2 style="font-size:1.5rem">Our menu</h2><p class="small">Browse drinks and food with photos and prices.</p><a class="btn" href="/menu">View the menu</a></div>
-      <div class="card"><h2>Reserve with us</h2><p class="small">Request a lounge table, an event, or a private party. Our team will confirm.</p>
-        <label for="rs-kind">What are you booking?</label><select id="rs-kind"><option>Lounge table</option><option>Event</option><option>Private party</option></select>
-        <label for="rs-date">Date</label><input id="rs-date" type="date">
-        <label for="rs-time">Time</label><input id="rs-time" type="time">
-        <label for="rs-guests">Number of guests</label><input id="rs-guests" type="number" inputmode="numeric" min="1" max="200" value="2">
-        <label for="rs-notes">Notes (optional)</label><textarea id="rs-notes" rows="2" maxlength="500" placeholder="Occasion, special requests…"></textarea>
-        <button class="btn" id="rs-go">Request reservation</button></div>
-      <h2 style="font-size:1.5rem">My reservations</h2><div id="rs-list"></div>
-    </div>
-    <div class="pane" id="p-me" hidden>
-      <div style="text-align:center"><img id="pf-avatar" class="avatar" style="width:110px;height:110px" hidden><h2 id="pf-name"></h2><p class="small" id="pf-user"></p></div>
-      <details class="hist" open><summary>My recent orders</summary><div class="hl"></div></details>
-      <div class="card" id="refcard"><h2>Refer a friend</h2><p class="small" id="ref-info"></p>
-        <p class="small">Your code: <b id="ref-code" style="color:var(--gold);letter-spacing:.1em"></b></p>
-        <div id="ref-enter" hidden><label for="ref-in" style="text-align:left">Got a friend’s code?</label><input id="ref-in" autocapitalize="characters"><button class="btn" id="ref-go">Add friend’s code</button></div>
-        <p class="small" id="ref-status" style="margin-top:10px"></p></div>
-      <div class="card" id="fb" style="margin-top:20px"><h2>Tell us about your visit</h2>
-        <div id="fb-form"><div class="stars" id="stars"><button data-v="1">★</button><button data-v="2">★</button><button data-v="3">★</button><button data-v="4">★</button><button data-v="5">★</button></div>
-          <textarea id="fb-msg" rows="3" maxlength="1000" placeholder="Your feedback (optional)"></textarea>
-        <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:.85rem;color:var(--mut)"><input type="checkbox" id="fb-pub" style="margin-top:3px">You may show my feedback on the Kopi Breyk website (first name only).</label>
-          <button class="btn" id="fb-go">Send feedback</button><p class="small" style="margin-top:10px">Your feedback goes privately to our team.</p></div>
-        <p id="fb-done" hidden>Thank you! Your feedback helps us serve you better.</p>
-        <p class="small" id="g-wrap" style="margin-top:14px"><a id="g-link" target="_blank" rel="noopener">Share your experience on Google ›</a></p></div>
-      <div class="card" id="myfb" hidden style="text-align:left"><h2>Your feedback</h2><div id="myfb-list"></div></div>
-      <div class="row2"><h2 style="font-size:1.3rem">Appearance</h2><div class="tabs" id="theme-tabs"><button data-th="">Dark</button><button data-th="light">Light</button></div><button class="mini" id="snd">Sound: on</button> <button class="mini" id="tour-again">How it works</button></div>
-      <button class="btn ghost" id="logout2">Log out</button>
-      <p class="small" style="text-align:center;margin-top:18px"><a href="/privacy" target="_blank" style="color:var(--mut)">Privacy notice</a> · <a href="#" id="del-acc" style="color:var(--bad)">Delete my account</a></p>
-    </div>
-  </section>
-
-  <section class="screen" id="s-photo" hidden>
-    <button class="back" data-home id="ph-back">‹ Back</button>
-    <h2>Add your photo</h2>
-    <p>This helps our cashiers make sure your points go to the right person. Only our staff can see it. Once saved, it can only be changed by staff.</p>
-    <img id="ph-prev" class="avatar" style="width:180px;height:180px" hidden>
-    <label class="btn ghost" style="text-align:center;cursor:pointer">Take or choose a photo<input id="ph-file" type="file" accept="image/*" capture="user" hidden></label>
-    <p class="err" id="ph-err"></p>
-    <button class="btn" id="ph-save" hidden>Save my photo</button>
-  </section>
-
-  <section class="screen" id="s-comm" hidden>
-    <button class="back" data-home>‹ Back</button>
-    <h2>Community</h2>
-    <div id="c-closed" hidden><p>The community is closed for now. Please check back soon.</p></div>
+    <div class="pane" id="p-community" hidden>
+      <h2>Community</h2>
+        <div id="c-closed" hidden><p>The community is closed for now. Please check back soon.</p></div>
     <div id="c-join" hidden><div class="card" style="text-align:left"><h2>Join the community</h2>
       <p class="small" style="text-align:left">Share moments, like and comment with other Kopi Breyk regulars. Be kind, and don’t post anyone else’s photo without their permission. Read the <a href="/guidelines" target="_blank">community guidelines</a>.</p>
       <p class="err" id="c-agemsg" hidden>The community is for members aged 13 and up.</p>
@@ -146,6 +103,59 @@
         <p class="small" style="text-align:center"><a href="/guidelines" target="_blank" style="color:var(--mut)">Community guidelines</a> · <a href="#" id="c-leave" style="color:var(--bad)">Leave the community</a></p></div>
     </div>
     <div id="c-modal" hidden></div>
+    </div>
+    <div class="pane" id="p-me" hidden>
+      <div style="text-align:center"><img id="pf-avatar" class="avatar" style="width:110px;height:110px" hidden><h2 id="pf-name"></h2><p class="small" id="pf-user"></p></div>
+      <details class="hist" open><summary>My recent orders</summary><div class="hl"></div></details>
+      <div class="card" id="refcard"><h2>Refer a friend</h2><p class="small" id="ref-info"></p>
+        <p class="small">Your code: <b id="ref-code" style="color:var(--gold);letter-spacing:.1em"></b></p>
+        <div id="ref-enter" hidden><label for="ref-in" style="text-align:left">Got a friend’s code?</label><input id="ref-in" autocapitalize="characters"><button class="btn" id="ref-go">Add friend’s code</button></div>
+        <p class="small" id="ref-status" style="margin-top:10px"></p></div>
+      <div class="card" id="fb" style="margin-top:20px"><h2>Tell us about your visit</h2>
+        <div id="fb-form"><div class="stars" id="stars"><button data-v="1">★</button><button data-v="2">★</button><button data-v="3">★</button><button data-v="4">★</button><button data-v="5">★</button></div>
+          <textarea id="fb-msg" rows="3" maxlength="1000" placeholder="Your feedback (optional)"></textarea>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:.85rem;color:var(--mut)"><input type="checkbox" id="fb-pub" style="margin-top:3px">You may show my feedback on the Kopi Breyk website (first name only).</label>
+          <button class="btn" id="fb-go">Send feedback</button><p class="small" style="margin-top:10px">Your feedback goes privately to our team.</p></div>
+        <p id="fb-done" hidden>Thank you! Your feedback helps us serve you better.</p>
+        <p class="small" id="g-wrap" style="margin-top:14px"><a id="g-link" target="_blank" rel="noopener">Share your experience on Google ›</a></p></div>
+      <div class="card" id="myfb" hidden style="text-align:left"><h2>Your feedback</h2><div id="myfb-list"></div></div>
+      <div class="row2"><h2 style="font-size:1.3rem">Appearance</h2><div class="tabs" id="theme-tabs"><button data-th="">Dark</button><button data-th="light">Light</button></div><button class="mini" id="snd">Sound: on</button> <button class="mini" id="tour-again">How it works</button></div>
+      <button class="btn ghost" id="logout2">Log out</button>
+      <p class="small" style="text-align:center;margin-top:18px"><a href="/privacy" target="_blank" style="color:var(--mut)">Privacy notice</a> · <a href="#" id="del-acc" style="color:var(--bad)">Delete my account</a></p>
+    </div>
+  </section>
+
+  <section class="screen" id="s-reserve" hidden>
+    <button class="back" data-home>‹ Back</button>
+    <h2>Reservations</h2>
+    <div class="card"><h2>Reserve with us</h2><p class="small">Request a lounge table, an event, or a private party. Our team will confirm.</p>
+        <label for="rs-kind">What are you booking?</label><select id="rs-kind"><option>Lounge table</option><option>Event</option><option>Private party</option></select>
+        <label for="rs-date">Date</label><input id="rs-date" type="date">
+        <label for="rs-time">Time</label><input id="rs-time" type="time">
+        <label for="rs-guests">Number of guests</label><input id="rs-guests" type="number" inputmode="numeric" min="1" max="200" value="2">
+        <label for="rs-notes">Notes (optional)</label><textarea id="rs-notes" rows="2" maxlength="500" placeholder="Occasion, special requests…"></textarea>
+        <button class="btn" id="rs-go">Request reservation</button></div>
+    <h2 style="font-size:1.5rem;margin-top:8px">My reservations</h2><div id="rs-list"></div>
+  </section>
+
+  <section class="screen" id="s-events" hidden>
+    <button class="back" data-home>‹ Back</button>
+    <h2>What’s on</h2><div id="ev-list"></div>
+  </section>
+
+  <section class="screen" id="s-visit" hidden>
+    <button class="back" data-home>‹ Back</button>
+    <h2>Visit us</h2><div id="visit-list"></div>
+  </section>
+
+  <section class="screen" id="s-photo" hidden>
+    <button class="back" data-home id="ph-back">‹ Back</button>
+    <h2>Add your photo</h2>
+    <p>This helps our cashiers make sure your points go to the right person. Only our staff can see it. Once saved, it can only be changed by staff.</p>
+    <img id="ph-prev" class="avatar" style="width:180px;height:180px" hidden>
+    <label class="btn ghost" style="text-align:center;cursor:pointer">Take or choose a photo<input id="ph-file" type="file" accept="image/*" capture="user" hidden></label>
+    <p class="err" id="ph-err"></p>
+    <button class="btn" id="ph-save" hidden>Save my photo</button>
   </section>
 
   <section class="screen" id="s-wheel" hidden>
@@ -171,7 +181,7 @@
   <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
   <button data-tab="rewards"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M8 8a2.5 2.5 0 1 1 0-5c2.5 0 4 5 4 5s1.5-5 4-5a2.5 2.5 0 1 1 0 5"/></svg><span>Rewards</span></button>
   <button data-tab="qr" class="qr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h3M21 17v4"/></svg><span>My QR</span></button>
-  <button data-tab="explore"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Explore</span></button>
+  <button data-tab="community"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg><span>Community</span></button>
   <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></button>
 </nav>
 <canvas id="confetti" hidden></canvas>
@@ -189,7 +199,7 @@ const show = id => { document.querySelectorAll('.screen').forEach(e => e.hidden 
 const all = (s, f) => document.querySelectorAll(s).forEach(f);
 const day = (s, n) => new Date(new Date(s + 'T00:00:00Z').getTime() + n * 864e5).toISOString().slice(0, 10);
 
-function logout() { localStorage.removeItem('kb_creds'); creds = null; clearInterval(tick); show('s-auth'); }
+function logout() { localStorage.removeItem('kb_creds'); creds = null; tab = 'home'; myPhoto = null; qrFor = ''; lastPts = 0; cme = null; clearInterval(tick); show('s-auth'); }
 $('#logout').onclick = logout;
 all('[data-home]', b => b.onclick = () => { clearInterval(tick); route(st); });
 
@@ -207,7 +217,7 @@ $('#auth-go').onclick = async () => {
   const r = mode === 'login' ? await rpc('get_status', { p_user: u, p_pin: p }) : await rpc('signup', su);
   $('#auth-go').disabled = false;
   if (r.error) { $('#auth-err').textContent = r.error; return; }
-  creds = { u: r.username, p }; localStorage.setItem('kb_creds', JSON.stringify(creds)); $('#p').value = '';
+  creds = { u: r.username, p }; localStorage.setItem('kb_creds', JSON.stringify(creds)); $('#p').value = ''; tab = 'home';
   if (mode === 'signup' && $('#rf').value.trim()) { const rr = await call('enter_referral', { p_code: $('#rf').value }); if (rr.error) toast(rr.error); }
   route(r);
 };
@@ -217,7 +227,7 @@ async function route(s) {
   if (!creds) return show('s-auth');
   if (!s) { s = await call('get_status'); if (s.error) { logout(); toast(s.error); return; } }
   st = s; all('.who', e => e.textContent = (s.name || s.username).split(' ')[0]);
-  if (!s.welcomed && !s.has_photo) openPhoto(); else if (!s.welcomed) { $('#w-pts').textContent = s.welcome + ' points'; $('#code').value = ''; show('s-welcome'); } else { renderHome(); show('s-home'); }
+  if (!s.welcomed && !s.has_photo) openPhoto(); else if (!s.welcomed) { $('#w-pts').textContent = s.welcome + ' points'; $('#code').value = ''; show('s-welcome'); } else { renderHome(); show('s-home'); if (pendingHash) { const h = pendingHash; pendingHash = null; if (TABS.includes(h)) setTab(h, true); } }
 }
 $('#code-go').onclick = async () => {
   const c = $('#code').value; $('#code-err').textContent = '';
@@ -263,7 +273,7 @@ function tickSound() {
 function scheduleTicks(total) { for (let k = 1; k <= total; k++) setTimeout(tickSound, 5200 * (1 - Math.pow(1 - k / total, 1 / 3.5))); }
 function applyTheme(t) { document.documentElement.dataset.theme = t; localStorage.setItem('kb_theme', t); all('#theme-tabs button', b => b.classList.toggle('on', b.dataset.th === t)); }
 all('#theme-tabs button', b => b.onclick = () => applyTheme(b.dataset.th)); applyTheme(localStorage.getItem('kb_theme') || '');
-const TOUR = [['Earn points', 'Every ₱100 you spend earns 1 point. Once you have 50 points, you can use them to lower your bill.'], ['Keep your streak', 'Order 3 days in a row for a free spin. If you miss a day, your 5th visit earns one instead.'], ['Show your QR', 'Open My QR before you pay so the cashier can add your points. Then spin the wheel for treats.']];
+const TOUR = [['Find your way', 'Home has our menu, reservations and events. Rewards has your points and spins. Community is where regulars share photos.'], ['Earn points', 'Every ₱100 you spend earns 1 point. Once you have 50 points, you can use them to lower your bill.'], ['Keep your streak', 'Order 3 days in a row for a free spin. If you miss a day, your 5th visit earns one instead.'], ['Show your QR', 'Open My QR before you pay so the cashier can add your points. Then spin the wheel for treats.']];
 let ti = 0;
 function drawTour() { $('#tour-body').innerHTML = `<h2>${TOUR[ti][0]}</h2><p>${TOUR[ti][1]}</p>`; $('#tour-dots').innerHTML = TOUR.map((_, i) => `<i class="${i === ti ? 'on' : ''}"></i>`).join(''); $('#tour-next').textContent = ti === TOUR.length - 1 ? 'Got it' : 'Next'; }
 function openTour() { ti = 0; drawTour(); $('#tour').hidden = false; }
@@ -272,17 +282,18 @@ $('#tour-next').onclick = () => { if (ti < TOUR.length - 1) { ti++; drawTour(); 
 $('#tour-skip').onclick = closeTour; $('#tour-again').onclick = openTour;
 
 // ---- bottom navigation ----
-let tab = localStorage.getItem('kb_tab') || 'home';
+const TABS = ['home', 'rewards', 'qr', 'community', 'me'];
+let tab = 'home';
+let pendingHash = (location.hash || '').slice(1);
 function setTab(t, user) {
-  tab = ['home', 'rewards', 'qr', 'explore', 'me'].includes(t) ? t : 'home'; localStorage.setItem('kb_tab', tab);
+  tab = TABS.includes(t) ? t : 'home';
   all('.pane', p => p.hidden = p.id !== 'p-' + tab); all('#nav button', b => b.classList.toggle('on', b.dataset.tab === tab));
-  $('#nav-ind').style.transform = 'translateX(' + ['home', 'rewards', 'qr', 'explore', 'me'].indexOf(tab) * 100 + '%)';
-  if (tab === 'explore') { loadRes(); loadEvents(); }
+  $('#nav-ind').style.transform = 'translateX(' + TABS.indexOf(tab) * 100 + '%)';
+  if (tab === 'community' && (user || !cme)) openComm();
   if (tab === 'me') { loadRef(); loadFb(); }
   if (user) window.scrollTo(0, 0);
 }
 all('[data-tab]', b => b.onclick = () => setTab(b.dataset.tab, true));
-$('#to-wheel2').onclick = () => $('#to-wheel').click();
 $('#logout2').onclick = logout;
 
 // ---- community ----
@@ -298,7 +309,7 @@ const imgFit = (f, w, h, q, cover) => new Promise(res => { const im = new Image(
   const c = document.createElement('canvas'); c.width = tw; c.height = th; c.getContext('2d').drawImage(im, sx, sy, sw, sh, 0, 0, tw, th); URL.revokeObjectURL(im.src); res(c.toDataURL('image/jpeg', q)); }; im.src = URL.createObjectURL(f); });
 function drawAvs(sel) { $(sel).innerHTML = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'].map(a => `<button class="avb${avPick === a ? ' on' : ''}" data-av="${a}">${avHTML(a, 'K', 44)}</button>`).join('') + (avUpload ? `<button class="avb${avPick === 'up' ? ' on' : ''}" data-av="up">${avHTML(avUpload, 'K', 44)}</button>` : ''); }
 async function openComm() {
-  show('s-comm'); const r = await call('community_me'); if (r.error) { toast(r.error); return; } cme = r;
+  const r = await call('community_me'); if (r.error) { toast(r.error); return; } cme = r;
   if (!r.enabled) return cShow('c-closed');
   if (!r.joined) { $('#c-agemsg').hidden = r.age_ok; $('#c-joinbtn').disabled = !r.age_ok; drawAvs('#c-avs'); return cShow('c-join'); }
   cShow('c-main'); $('#c-photobtn').hidden = !r.photo_ok;
@@ -336,7 +347,7 @@ async function loadComments(id) {
     + `<input class="cin" id="ci${id}" maxlength="300" placeholder="Write a comment…"><button class="mini" data-csend="${id}" style="margin-top:6px">Send</button>`;
 }
 document.addEventListener('click', async e => {
-  const t = e.target.closest('[data-like],[data-cm],[data-csend],[data-crep],[data-cdel],[data-nick],[data-open],[data-av]'); if (!t || !$('#s-comm') || $('#s-comm').hidden) return; const d = t.dataset;
+  const t = e.target.closest('[data-like],[data-cm],[data-csend],[data-crep],[data-cdel],[data-nick],[data-open],[data-av]'); if (!t || $('#p-community').hidden || $('#s-home').hidden) return; const d = t.dataset;
   if (d.nick) { e.preventDefault(); return showProfile(d.nick); }
   if (d.like) { const on = d.on === '0', r = await call('community_like', { p_post: +d.like, p_on: on }); if (r.error) return toast(r.error);
     const n = t.querySelector('span'); n.textContent = +n.textContent + (on ? 1 : -1); t.dataset.on = on ? 1 : 0; t.classList.toggle('on', on); }
@@ -353,7 +364,6 @@ document.addEventListener('change', async e => {
   if (id === 'c-file') { cPhoto = await imgFit(f, 800, 800, .7, false); $('#c-prev').src = cPhoto; $('#c-prev').hidden = false; }
 });
 all('#c-tabs button', b => b.onclick = () => setCTab(b.dataset.ct));
-$('#open-comm').onclick = openComm; $('#open-comm2').onclick = openComm;
 $('#c-joinbtn').onclick = async () => {
   $('#c-err').textContent = ''; if (!$('#c-agree').checked) { $('#c-err').textContent = 'Please tick the box to agree.'; return; }
   const r = await call('community_join', { p_nick: $('#c-nick').value, p_avatar: avPick === 'up' ? avUpload : avPick }); if (r.error) { $('#c-err').textContent = r.error; return; }
@@ -387,6 +397,20 @@ $('#ref-go').onclick = async () => {
   const v = $('#ref-in').value.trim(); if (!v) return; const r = await call('enter_referral', { p_code: v });
   if (r.error) { toast(r.error); return; } toast('Code added! Show your QR at the counter on your next order.'); $('#ref-in').value = ''; loadRef();
 };
+
+// ---- Home tiles open their own pages ----
+function goSub(n) { if (n === 'reserve') { show('s-reserve'); loadRes(); } else if (n === 'events') { show('s-events'); loadEvents(); } else if (n === 'visit') { show('s-visit'); loadVisit(); } }
+all('[data-go]', b => b.onclick = () => goSub(b.dataset.go));
+let siteCache = null;
+async function loadVisit() {
+  if (!siteCache) { const r = await rpc('get_site'); siteCache = (r && r.texts) || {}; }
+  const t = siteCache, a = (u, x) => /^https?:\/\//.test(u) ? `<a href="${esc(u)}" target="_blank" rel="noopener" style="color:var(--gold);margin-right:14px">${x}</a>` : '', rows = [];
+  if (t.hours) rows.push(`<div class="row2"><h2 style="font-size:1.3rem">Opening hours</h2><p style="white-space:pre-line;color:var(--ink);margin:0">${esc(t.hours)}</p></div>`);
+  if (t.address || t.map_url) rows.push(`<div class="row2"><h2 style="font-size:1.3rem">Find us</h2><p style="color:var(--ink);margin:0 0 6px">${esc(t.address)}</p>${a(t.map_url, 'Get directions ›')}</div>`);
+  if (t.phone || t.email) rows.push(`<div class="row2"><h2 style="font-size:1.3rem">Contact</h2><p style="color:var(--ink);margin:0">${esc(t.phone)}${t.phone && t.email ? '<br>' : ''}${esc(t.email)}</p></div>`);
+  if (t.facebook || t.instagram) rows.push(`<div class="row2"><h2 style="font-size:1.3rem">Follow us</h2>${a(t.facebook, 'Facebook')}${a(t.instagram, 'Instagram')}</div>`);
+  $('#visit-list').innerHTML = rows.join('') || empty('We’re still adding our details. Please ask our staff!');
+}
 
 // ---- events + promo banner + delete account ----
 rpc('get_banner').then(b => { if (b && b.text) { $('#promo').textContent = b.text; $('#promo').hidden = false; } });
@@ -460,12 +484,12 @@ function renderHome() {
   if (st.days.includes(st.today)) setTimeout(() => sessionStorage.setItem('kb_stamp_' + st.today, '1'), 1500);
   if (!localStorage.getItem('kb_tour_' + creds.u) && $('#tour').hidden) openTour();
   $('#ptsval').textContent = st.points < minRedeem ? `Reach ${minRedeem} points to start using them on your bill.` : `Worth ₱${(st.points * st.peso).toLocaleString('en-PH')} off your bill. Minimum ${minRedeem} points per redemption. Tell the cashier how many to use.`;
-  $('#spins').textContent = st.spins; $('#spins2').textContent = st.spins; $('#home-spin').hidden = st.spins < 1; $('#to-wheel').disabled = st.spins < 1;
+  $('#spins').textContent = st.spins; $('#to-wheel').disabled = st.spins < 1;
   $('#bonus-note').hidden = !st.birthday; $('#bonus-note').textContent = st.spins > 0 ? 'Happy birthday! Your next spin is a guaranteed prize.' : 'Happy birthday month! Your next free spin will be a guaranteed prize.';
   $('#ph-banner').hidden = st.has_photo; renderMember();
   $('#pf-name').textContent = st.name || st.username; $('#pf-user').textContent = '@' + st.username; setTab(tab);
   $('#pending').hidden = !st.pending; if (st.pending) $('#pend-name').textContent = st.pending.prize;
-  const [t, x] = streakInfo(); ['#st-title', '#st-title2'].forEach(q => $(q).textContent = t); ['#st-txt', '#st-txt2'].forEach(q => $(q).textContent = x);
+  const [t, x] = streakInfo(); $('#st-title').textContent = t; $('#st-txt').textContent = x;
   const first = day(st.today, -27), pad = new Date(first + 'T00:00:00Z').getUTCDay(), on = new Set(st.days), stampNow = st.days.includes(st.today) && !sessionStorage.getItem('kb_stamp_' + st.today);
   $('#cal').innerHTML = [...'SMTWTFS'].map(c => `<div class="h">${c}</div>`).join('') + '<div class="e"></div>'.repeat(pad) +
     [...Array(28)].map((_, i) => { const d = day(first, i); return `<div class="${on.has(d) ? 'on' : ''} ${d === st.today ? 't' : ''}${d === st.today && stampNow ? ' stamp' : ''}">${+d.slice(8)}</div>`; }).join('');
